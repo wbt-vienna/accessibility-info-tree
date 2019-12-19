@@ -1,0 +1,159 @@
+[{
+    "text": "Arbeitswelt",
+    "items": [{
+        "text": "Arbeitsplatzadaptierung"
+    }, {
+        "text": "Jobvermittlung"
+    }]
+}, {
+    "text": "Beratung"
+}, {
+    "text": "DIY",
+    "items": [{
+        "text": "Makerspace"
+    }, {
+        "text": "3D Druck"
+    }]
+}, {
+    "text": "Firma",
+    "items": [{
+        "text": "Lifetool"
+    }]
+}, {
+    "text": "Fortbildung",
+    "items": [{
+        "text": "Schulung"
+    }, {
+        "text": "Workshop"
+    }]
+}, {
+    "text": "Leichter lesen"
+}, {
+    "text": "Organisation",
+    "items": [{
+        "text": "Interessensvertretung"
+    }, {
+        "text": "Förderstelle"
+    }, {
+        "text": "Verein"
+    }, {
+        "text": "W3C"
+    }]
+}, {
+    "text": "Rechtliches",
+    "items": [{
+        "text": "Gesetz"
+    }, {
+        "text": "Standard"
+    }]
+}, {
+    "text": "Technologie",
+    "items": [{
+        "text": "Applikationen",
+        "items": [{
+            "text": "BD_Apps"
+        }, {
+            "text": "Screenreader"
+        }, {
+            "text": "TTS_App"
+        }, {
+            "text": "UK_Apps"
+        }]
+    }, {
+        "text": "AsTeRICS",
+        "items": [{
+            "text": "AsTeRICS Framework"
+        }, {
+            "text": "AsTeRICS Grid"
+        }]
+    }, {
+        "text": "Barrierefreie Dokumente",
+        "items": [{
+            "text": "BD_Apps"
+        }]
+    }, {
+        "text": "Barrierefreie Haushaltsgeräte"
+    }, {
+        "text": "Barrierefreies Web",
+        "items": [{
+            "text": "WCAG"
+        }, {
+            "text": "W3C"
+        }]
+    }, {
+        "text": "Computerzugang",
+        "items": [{
+            "text": "Betriebssystemfeature"
+        }, {
+            "text": "Buttoninterface",
+            "items": [{
+                "text": "FABI"
+            }]
+        }, {
+            "text": "FlipMouse"
+        }, {
+            "text": "TTS",
+            "items": [{
+                "text": "TTS_App"
+            }, {
+                "text": "TTS_Voice"
+            }]
+        }, {
+            "text": "Screenreader",
+            "items": [{
+                "text": "JAWS"
+            }, {
+                "text": "NVDA"
+            }]
+        }]
+    }, {
+        "text": "Consumerprodukt geeignet für AT"
+    }, {
+        "text": "Eingabemethode allgemein",
+        "items": [{
+            "text": "Scanning"
+        }, {
+            "text": "Hovering"
+        }]
+    }, {
+        "text": "Kommerzielle AT",
+        "items": [{
+            "text": "Lifetool"
+        }, {
+            "text": "Tobii Dynavox"
+        }]
+    }]
+}, {
+    "text": "Unterstützte Kommunikation",
+    "items": [{
+        "text": "analoge UK Hilfsmittel"
+    }, {
+        "text": "UK_Apps"
+    }]
+}, {
+    "text": "Zertifizierung"
+}, {
+    "text": "Meta",
+    "items": [{
+        "text": "Land",
+        "items": [{
+            "text": "Deutschland"
+        }, {
+            "text": "Österreich",
+            "items": [{
+                "text": "Niederösterreich"
+            }, {
+                "text": "Wien"
+            }]
+        }, {
+            "text": "Schweiz"
+        }]
+    }, {
+        "text": "Sprache",
+        "items": [{
+            "text": "Deutsch"
+        }, {
+            "text": "Englisch"
+        }]
+    }]
+}]
