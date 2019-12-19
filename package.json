@@ -1,0 +1,42 @@
+{
+  "name": "accessibility-info-tree",
+  "version": "0.1.0",
+  "description": "Structured information collection about all kinds of topics in the field of accessibility ",
+  "main": "index.js",
+  "dependencies": {
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.3"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.4",
+    "webpack-dev-server": "^3.10.0",
+    "webpack-cli": "^3.3.10",
+    "babel-cli": "^6.26.0",
+    "@babel/core": "^7.7.7",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^3.4.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.2",
+    "vue-loader": "^15.8.3",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.config.js --env.production",
+    "release": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asterics/accessibility-info-tree.git"
+  },
+  "author": "Benjamin Klaus",
+  "license": "AGPL3",
+  "bugs": {
+    "url": "https://github.com/asterics/accessibility-info-tree/issues"
+  },
+  "homepage": "https://github.com/asterics/accessibility-info-tree"
+}
