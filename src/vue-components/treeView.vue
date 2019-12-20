@@ -1,25 +1,5 @@
 <template>
     <div>
-        <div v-if="selectedTag" class="container">
-            <div class="row">
-                <label class="col-md-2" for="currentParents">Eltern</label>
-                <span class="col-md-10" id="currentParents">
-                <a v-for="tag in selectedTag.parents" href="javascript:;" @click="selectTag(tag)">{{tag}}</a>
-                <span v-if="selectedTag.parents.length === 0">(keine)</span>
-            </span>
-            </div>
-            <div class="row">
-                <label class="col-md-2" for="currenTag">aktuelle Auswahl</label>
-                <span class="col-md-10" id="currenTag">{{selectedTag.id}}</span>
-            </div>
-            <div class="row">
-                <label class="col-md-2" for="currentChildren">Kinder</label>
-                <span class="col-md-10" id="currentChildren">
-                <a v-for="tag in selectedTag.children" href="javascript:;" @click="selectTag(tag)">{{tag}} </a>
-            </span>
-            </div>
-        </div>
-
         <div id="tree" style="margin-top: 2em">
             <div>
                 <a href="javascript:;" @click="selectTag('EVERYTHING')">Zeige ganzen Baum</a>
@@ -38,10 +18,10 @@
             <tree-item v-if="selectedTag" :item="selectedTag" :select-tag-fn="selectTag"/>
         </div>
 
-
+        <h2>Tag-Suche</h2>
         <input type="text" v-model="search" @input="searchTags"/>
         <div>
-            <span v-for="tag in filteredTags"><a href="javascript:;" @click="selectTag(tag.id)">{{tag.id}}</a>&nbsp;</span>
+            <span v-for="tag in filteredTags"><a href="javascript:;" @click="selectTag(tag.id)">{{tag.id}} </a></span>
         </div>
     </div>
 </template>
