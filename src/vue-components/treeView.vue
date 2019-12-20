@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="tree" style="margin-top: 2em">
+        <div id="tree" style="margin-top: 2em" v-if="tags">
             <div>
                 <a href="javascript:;" @click="selectTag('EVERYTHING')">Zeige ganzen Baum</a>
             </div>
@@ -15,7 +15,7 @@
                 <span v-if="selectedTag.parents.length > 0"> -> </span>
                 <span>{{selectedTag.id}}</span>
             </div>
-            <tree-item v-if="selectedTag" :item="selectedTag" :select-tag-fn="selectTag"/>
+            <tree-item v-if="selectedTag" :tags="tags" :item="selectedTag" :select-tag-fn="selectTag"/>
         </div>
 
         <h2>Tag-Suche</h2>
@@ -28,15 +28,17 @@
 
 <script>
     import TreeItem from "./treeItem.vue"
+    import {dataService} from "../js/service/data/dataService";
+    import {databaseService} from "../js/service/data/databaseService";
 
     let thiz = null;
     export default {
         components: {TreeItem},
         data() {
             return {
-                tags: window.TAGS,
-                filteredTags: window.TAGS,
-                selectedTag: window.TAGS[2],
+                tags: null,
+                filteredTags: null,
+                selectedTag: null,
                 selectedTagChildren: null,
                 search: '',
                 timeoutHandler: null
@@ -64,8 +66,17 @@
             }
         },
         mounted() {
-            console.log(this.selectedTag);
             thiz = this;
+            if (!databaseService.isLoggedIn()) {
+                return thiz.$router.push('/login');
+            }
+            dataService.getTags().then(result => {
+                let tags = JSON.parse(JSON.stringify(result)).tags;
+                thiz.filteredTags = tags;
+                thiz.selectedTag = tags[0];
+                thiz.tags = tags;
+                console.log(tags);
+            })
         }
     }
 </script>

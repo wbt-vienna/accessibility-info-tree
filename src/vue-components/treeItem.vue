@@ -5,7 +5,7 @@
                 <a v-if="getTag(childId).children.length > 0" href="javascript:;" @click="selectTagFn(childId)">{{childId}}</a>
                 <span v-else>{{childId}}</span>
             </div>
-            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn"></tree-item>
+            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn" :tags="tags"></tree-item>
         </div>
     </div>
 </template>
@@ -16,7 +16,8 @@
         props: {
             'item': Object,
             'depth': Number,
-            'selectTagFn': Function
+            'selectTagFn': Function,
+            'tags': Array
         },
         data: function () {
             return {
@@ -26,7 +27,7 @@
         },
         methods: {
             getTag(id) {
-                return window.TAGS.filter(tag => tag.id === id)[0];
+                return this.tags.filter(tag => tag.id === id)[0];
             },
             getTextStyle(tagId) {
                 return this.getTag(tagId).children.length > 0 ? 'width: 30%;' : 'width: 100%;';
