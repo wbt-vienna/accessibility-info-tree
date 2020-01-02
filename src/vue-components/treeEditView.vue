@@ -67,9 +67,10 @@
         },
         mounted() {
             thiz = this;
-            databaseService.loginReadonly().then(() => {
-                return dataService.getTags();
-            }).then(result => {
+            if (!databaseService.isLoggedInReadWrite()) {
+                return thiz.$router.push('/login');
+            }
+            dataService.getTags().then(result => {
                 let tags = JSON.parse(JSON.stringify(result)).tags;
                 thiz.filteredTags = tags;
                 thiz.selectedTag = tags[0];

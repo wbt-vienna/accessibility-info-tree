@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
 import TreeView from '../vue-components/treeView.vue'
+import TreeEditView from '../vue-components/treeEditView.vue'
 import LoginView from '../vue-components/loginView.vue'
 import * as log from 'loglevel';
 
@@ -8,6 +9,7 @@ function init() {
 
     let routes = [
         {path: '/tree', component: TreeView},
+        {path: '/tree/edit', component: TreeEditView},
         {path: '/login', component: LoginView},
         {path: '*', redirect: '/tree'}
     ];

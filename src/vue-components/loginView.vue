@@ -24,8 +24,8 @@
         methods: {
             login() {
                 thiz.wrongPassword = false;
-                databaseService.login(this.password).then(() => {
-                    thiz.$router.push('/tree');
+                databaseService.loginReadWrite(this.password).then(() => {
+                    thiz.$router.push('/tree/edit');
                 }).catch(() => {
                     thiz.wrongPassword = true;
                 });
