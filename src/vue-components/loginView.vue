@@ -9,7 +9,6 @@
 
 <script>
     import TreeItem from "./treeItem.vue"
-    import {dataService} from "../js/service/data/dataService";
     import {databaseService} from "../js/service/data/databaseService";
 
     let thiz = null;
