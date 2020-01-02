@@ -3,8 +3,10 @@ import VueRouter from 'vue-router'
 import TreeView from '../vue-components/treeView.vue'
 import TreeEditView from '../vue-components/treeEditView.vue'
 import LoginView from '../vue-components/loginView.vue'
+import TagEditView from '../vue-components/tagEditView.vue'
 import * as log from 'loglevel';
 import 'mini.css';
+import {databaseService} from "./service/data/databaseService";
 
 function init() {
     window.log = log;
@@ -13,11 +15,21 @@ function init() {
         {path: '/tree', component: TreeView},
         {path: '/tree/edit', component: TreeEditView},
         {path: '/login', component: LoginView},
+        {path: '/tag/edit/:tagid', component: TagEditView},
         {path: '*', redirect: '/tree'}
     ];
 
     let router = new VueRouter({
         routes
+    });
+    router.beforeEach((to, from, next) => {
+        if (!databaseService.isLoggedIn()) {
+            databaseService.loginReadonly().then(() => {
+                next();
+            });
+        } else {
+            next();
+        }
     });
 
     Vue.use(VueRouter);
@@ -25,4 +37,5 @@ function init() {
         router
     }).$mount('#app');
 }
+
 init();
