@@ -33,10 +33,9 @@ databaseService.isLoggedIn = function () {
 
 /**
  * returns true if the read-write user is logged in
- * @param user
  * @return {boolean}
  */
-databaseService.isLoggedInReadWrite = function (user) {
+databaseService.isLoggedInReadWrite = function () {
     return _loggedInUser === 'accessibility-info-tree-user';
 };
 
