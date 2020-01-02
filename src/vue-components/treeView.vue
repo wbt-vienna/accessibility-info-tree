@@ -43,15 +43,13 @@
         },
         mounted() {
             thiz = this;
-            databaseService.loginReadonly().then(() => {
-                return dataService.getTags();
-            }).then(result => {
+            dataService.getTags().then(result => {
                 let tags = JSON.parse(JSON.stringify(result)).tags;
                 thiz.filteredTags = tags;
                 thiz.selectedTag = tags[0];
                 thiz.tags = tags;
                 console.log(tags);
-            })
+            });
         }
     }
 </script>
