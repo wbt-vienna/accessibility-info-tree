@@ -5,3 +5,7 @@ body {
 h1, h2, h3 {
     margin-left: 0 !important;
 }
+
+label {
+    font-weight: bold;
+}
