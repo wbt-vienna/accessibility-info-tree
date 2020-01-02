@@ -1,18 +1,43 @@
 import {pouchDbService} from "./pouchDbService";
 
 let databaseService = {};
+let _loggedInUser = null;
 
-let _initPromise = null;
-
-databaseService.login = function (password) {
-    if (pouchDbService.isLoggedIn()) {
+/**
+ * logs in read-only user
+ * @return {Promise<void>}
+ */
+databaseService.loginReadonly = function () {
+    if (_loggedInUser) {
         return Promise.resolve();
     }
-    return pouchDbService.initDatabase('accessibility-info-tree-user', password, "https://couchdb.asterics-foundation.org:6984/accessibility-info-tree");
+    return login('accessibility-info-tree-user-readonly', 'plaintext_password');
 };
 
-databaseService.isLoggedIn = function() {
-    return pouchDbService.isLoggedIn();
+/**
+ * logs in read-write user with given password
+ * @param password
+ * @return {Promise<void>}
+ */
+databaseService.loginReadWrite = function (password) {
+    return login('accessibility-info-tree-user', password);
+};
+
+/**
+ * returns true if any user is logged in
+ * @return {boolean}
+ */
+databaseService.isLoggedIn = function () {
+    return !!_loggedInUser;
+};
+
+/**
+ * returns true if the read-write user is logged in
+ * @param user
+ * @return {boolean}
+ */
+databaseService.isLoggedInReadWrite = function (user) {
+    return _loggedInUser === 'accessibility-info-tree-user';
 };
 
 /**
@@ -107,5 +132,17 @@ function checkIfLoggedIn() {
         throw "not logged in!";
     }
 }
+
+function login (user, password) {
+    if (_loggedInUser === user) {
+        return Promise.resolve();
+    }
+    _loggedInUser = null;
+    let promise = pouchDbService.initDatabase(user, password, "https://couchdb.asterics-foundation.org:6984/accessibility-info-tree");
+    promise.then(() => {
+        _loggedInUser = user;
+    });
+    return promise;
+};
 
 export {databaseService};
