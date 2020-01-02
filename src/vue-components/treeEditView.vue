@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Tags bearbeiten</h2>
+        <h2>Tag-Baum bearbeiten</h2>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags"></tag-tree>
     </div>
 </template>

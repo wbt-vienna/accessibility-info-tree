@@ -3,13 +3,13 @@
         <div>
             <a href="javascript:;" @click="selectTag('EVERYTHING')">Zeige ganzen Baum</a>
         </div>
-        <div>
+        <div style="margin-bottom: 1em">
             <span>Unterbaum nach: </span>
             <span v-if="value.parents.length > 1">(</span>
             <span v-for="(parent, index) in value.parents">
-            <span v-if="index > 0">, </span>
-            <a href="javascript:;" @click="selectTag(parent)">{{parent}}</a>
-        </span>
+                <span v-if="index > 0">, </span>
+                <a href="javascript:;" @click="selectTag(parent)">{{parent}}</a>
+            </span>
             <span v-if="value.parents.length > 1">)</span>
             <span v-if="value.parents.length > 0"> -> </span>
             <span>{{value.id}}</span>
@@ -29,8 +29,7 @@
         },
         components: {TreeItem},
         data() {
-            return {
-            }
+            return {}
         },
         methods: {
             selectTag(id) {

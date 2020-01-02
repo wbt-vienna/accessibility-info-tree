@@ -6,6 +6,7 @@
   "dependencies": {
     "jquery": "^3.4.1",
     "loglevel": "^1.6.6",
+    "mini.css": "^3.0.1",
     "objectmodel": "^4.0.5",
     "pouchdb": "^7.1.1",
     "pouchdb-authentication": "^1.1.3",
