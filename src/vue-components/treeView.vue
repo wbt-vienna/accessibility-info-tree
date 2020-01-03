@@ -48,7 +48,6 @@
                 thiz.filteredTags = tags;
                 thiz.selectedTag = tags[0];
                 thiz.tags = tags;
-                console.log(tags);
             });
         }
     }
