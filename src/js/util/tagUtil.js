@@ -49,6 +49,12 @@ tagUtil.getLabel = function (tagIdOrTag, tags) {
     return tag.label.de ? tag.label.de : tag.id;
 };
 
+tagUtil.sortTags = function (tagIdsOrTags, tags, returnIds) {
+    let tagObjects = tagIdsOrTags.map(idOrTag => tagUtil.getTag(idOrTag, tags));
+    tagObjects.sort((a,b) => (a.label.de || a.id).localeCompare(b.label.de));
+    return returnIds ? tagObjects.map(e => e.id) : tagObjects;
+};
+
 function getAll(tagIdOrTag, tags, getChildren) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
