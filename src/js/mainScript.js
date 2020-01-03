@@ -5,8 +5,9 @@ import TreeEditView from '../vue-components/treeEditView.vue'
 import LoginView from '../vue-components/loginView.vue'
 import TagEditView from '../vue-components/tagEditView.vue'
 import * as log from 'loglevel';
-import 'mini.css';
 import {databaseService} from "./service/data/databaseService";
+import 'mini.css';
+import '@fortawesome/fontawesome-free/js/all.min'
 
 function init() {
     window.log = log;
