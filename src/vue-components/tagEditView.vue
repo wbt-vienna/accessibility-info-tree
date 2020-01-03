@@ -14,13 +14,7 @@
             <div class="col-md-6" id="listParents">
                 <div v-if="selectedTag.parents.length === 0">(keine)</div>
                 <div v-for="parent in selectedTag.parents">
-                    <button title="Löschen" :disabled="selectedTag.parents.length === 1"
-                            style="padding: 0 0.5em; margin: 0 0 0.3em 0">X
-                    </button>
-                    <a href="javascript:;" @click="toEditTag(parent)">{{tagUtil.getLabel(parent, tags)}}</a></div>
-                <div class="row">
-                    <input class="col-md-8" list="possibleNewList" placeholder="Eltern-Tag hinzufügen"/>
-                    <button class="col-md-3">Hinzufügen</button>
+                    <a href="javascript:;" @click="toEditTag(parent)">{{tagUtil.getLabel(parent, tags)}}</a>
                 </div>
             </div>
         </div>
@@ -29,11 +23,7 @@
             <div class="col-md-6" id="listChildren">
                 <div v-if="selectedTag.children.length === 0">(keine)</div>
                 <div v-for="child in selectedTag.children">
-                    <button title="Löschen" style="padding: 0 0.5em; margin: 0 0 0.3em 0">X</button>
-                    <a href="javascript:;" @click="toEditTag(child)">{{tagUtil.getLabel(child, tags)}}</a></div>
-                <div class="row">
-                    <input class="col-md-8" list="possibleNewList" placeholder="Kind-Tag hinzufügen"/>
-                    <button class="col-md-3">Hinzufügen</button>
+                    <a href="javascript:;" @click="toEditTag(child)">{{tagUtil.getLabel(child, tags)}}</a>
                 </div>
             </div>
         </div>
@@ -43,9 +33,6 @@
         <div class="row">
             <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit')"><i class="fas fa-tree"></i> Zurück zum Baum</button>
         </div>
-        <datalist id="possibleNewList">
-            <option v-for="tag in possibleNew">{{tag.id}}</option>
-        </datalist>
     </div>
 </template>
 
@@ -65,7 +52,6 @@
                 tags: null,
                 selectedTag: null,
                 originalTagsJSON: null,
-                possibleNew: null,
                 tagUtil: tagUtil
             }
         },
@@ -86,7 +72,6 @@
                     let tags = JSON.parse(JSON.stringify(result)).tags;
                     thiz.originalTagsJSON = JSON.stringify(tags);
                     thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, tags) || tags[0];
-                    thiz.possibleNew = tagUtil.getPossibleNewRelatives(thiz.selectedTag, tags);
                     thiz.tags = tags;
                     return Promise.resolve();
                 });
