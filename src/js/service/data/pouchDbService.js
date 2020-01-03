@@ -14,6 +14,20 @@ pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress
         _pouchDb.close();
     }
     _pouchDb = new PouchDB(remoteCouchDbAddress, {skip_setup: true});
+    _pouchDb.changes({
+        since: 'now',
+        live: true,
+        include_docs: true
+    }).on('change', function (change) {
+        // change.id contains the doc id, change.doc contains the doc
+        if (change.deleted) {
+            // document was deleted
+        } else {
+            changeHandler(change);
+        }
+    }).on('error', function (err) {
+        log.warn('pouchdb changes error: ' + err)
+    });
     let promise = _pouchDb.logIn(username, password);
     promise.catch(() => {
         _pouchDb = null;
@@ -140,8 +154,8 @@ function dbResToResolveObject(res) {
     }
 }
 
-function changeHandler(changedIds, changedDocs) {
-    $(document).trigger(constants.EVENT_DB_PULL_UPDATED, [changedIds, changedDocs]);
+function changeHandler(change) {
+    $(document).trigger(constants.EVENT_DB_PULL_UPDATED, [change.doc]);
 }
 
 export {pouchDbService};

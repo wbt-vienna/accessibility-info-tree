@@ -1,10 +1,10 @@
 import {databaseService} from "./databaseService";
 import {Tags} from "../../model/Tags";
+import $ from "jquery";
+import {constants} from "../../util/constants";
 
 let dataService = {};
 let lastTags = null;
-
-//TODO auto-sync
 
 dataService.getTags = function () {
     if (lastTags) {
@@ -24,5 +24,11 @@ dataService.saveTags = function (tagData) {
     });
     return promise;
 };
+
+$(document).on(constants.EVENT_DB_PULL_UPDATED, (event, changedDoc) => {
+    if (changedDoc.id === constants.TAGS_DOCUMENT_ID) {
+        lastTags = changedDoc;
+    }
+});
 
 export {dataService};

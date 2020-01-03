@@ -50,6 +50,8 @@
 </template>
 
 <script>
+    import $ from 'jquery'
+    import {constants} from "../js/util/constants";
     import {dataService} from "../js/service/data/dataService";
     import {databaseService} from "../js/service/data/databaseService";
     import {tagUtil} from "../js/util/tagUtil";
@@ -80,17 +82,19 @@
                 if (!databaseService.isLoggedInReadWrite()) {
                     return thiz.$router.push('/login');
                 }
-                dataService.getTags().then(result => {
+                return dataService.getTags().then(result => {
                     let tags = JSON.parse(JSON.stringify(result)).tags;
                     thiz.originalTagsJSON = JSON.stringify(tags);
                     thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, tags) || tags[0];
                     thiz.possibleNew = tagUtil.getPossibleNewRelatives(thiz.selectedTag, tags);
                     thiz.tags = tags;
+                    return Promise.resolve();
                 });
             },
             revert() {
                 thiz.tags = JSON.parse(thiz.originalTagsJSON);
                 thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, thiz.tags) || thiz.tags[0];
+                thiz.save(true);
             },
             save(instant) {
                 if (instant) {
@@ -102,11 +106,23 @@
                     }, 1000);
                 }
                 return Promise.resolve();
+            },
+            updateHandler(event, changedDoc) {
+                if (changedDoc.id === constants.TAGS_DOCUMENT_ID) {
+                    let originalJSON = thiz.originalTagsJSON;
+                    thiz.init().then(() => {
+                        thiz.originalTagsJSON = originalJSON;
+                    });
+                }
             }
         },
         mounted() {
             thiz = this;
             thiz.init();
+            $(document).on(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
+        },
+        beforeDestroy() {
+            $(document).off(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
         },
         beforeRouteUpdate(to, from, next) {
             let promises = [];
