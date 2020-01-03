@@ -2,22 +2,26 @@
     <div v-if="item" style=";">
         <div v-for="childId in item.children" style="display: flex; align-items: center; border: 1px solid gray;">
             <div class="treeText" :style="getTextStyle(childId)">
-                <a v-if="getTag(childId).children.length > 0" href="javascript:;" @click="selectTagFn(childId)">{{childId}}</a>
-                <span v-else>{{childId}}</span>
+                <button v-for="action in actions" style="padding: 0; margin: 0 2px;" @click="action.fn(childId)"><i :class="action.icon"/></button>
+                <a v-if="getTag(childId).children.length > 0" href="javascript:;" @click="selectTagFn(childId)">{{getLabel(childId)}}</a>
+                <span v-else>{{getLabel(childId)}}</span>
             </div>
-            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn" :tags="tags"></tree-item>
+            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn" :tags="tags" :actions="actions"></tree-item>
         </div>
     </div>
 </template>
 
 <script>
+    import {tagUtil} from "../js/util/tagUtil";
+
     export default {
         name: 'tree-item',
         props: {
             'item': Object,
             'depth': Number,
             'selectTagFn': Function,
-            'tags': Array
+            'tags': Array,
+            actions: Array
         },
         data: function () {
             return {
@@ -31,6 +35,9 @@
             },
             getTextStyle(tagId) {
                 return this.getTag(tagId).children.length > 0 ? 'width: 30%;' : 'width: 100%;';
+            },
+            getLabel(id) {
+                return tagUtil.getLabel(id, this.tags);
             }
         },
         mounted() {

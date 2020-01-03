@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Tag-Baum bearbeiten</h2>
-        <tag-tree v-if="tags" v-model="selectedTag" :tags="tags"></tag-tree>
+        <tag-tree v-if="tags" v-model="selectedTag" :tags="tags" :actions="actions"></tag-tree>
     </div>
 </template>
 
@@ -16,10 +16,22 @@
         data() {
             return {
                 tags: null,
-                selectedTag: null
+                selectedTag: null,
+                actions: [
+                    {
+                        icon: 'fas fa-pencil-alt',
+                        fn: function(id) {
+                            thiz.toEditTag(id)
+                        }
+                    }
+                ]
             }
         },
         methods: {
+            toEditTag(id) {
+                id = id || thiz.selectedTag.id;
+                thiz.$router.push('/tag/edit/' + id);
+            }
         },
         mounted() {
             thiz = this;

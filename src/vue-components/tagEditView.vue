@@ -1,20 +1,23 @@
 <template>
     <div v-if="selectedTag" class="container">
         <h2>Tag bearbeiten ({{selectedTag.id}})</h2>
-
         <div class="row">
             <label class="col-md-3" for="idSpan">ID</label>
             <span class="col-md-6" id="idSpan">{{selectedTag.id}}</span>
         </div>
         <div class="row">
             <label class="col-md-3" for="labelInput" style="align-items: center;">Label</label>
-            <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de"/>
+            <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de" @input="save()"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="listParents">Eltern</label>
             <div class="col-md-6" id="listParents">
                 <div v-if="selectedTag.parents.length === 0">(keine)</div>
-                <div v-for="parent in selectedTag.parents"><button title="Löschen" :disabled="selectedTag.parents.length === 1" style="padding: 0 0.5em; margin: 0 0 0.3em 0">X</button> <a href="javascript:;" @click="toEditTag(parent)">{{parent}}</a></div>
+                <div v-for="parent in selectedTag.parents">
+                    <button title="Löschen" :disabled="selectedTag.parents.length === 1"
+                            style="padding: 0 0.5em; margin: 0 0 0.3em 0">X
+                    </button>
+                    <a href="javascript:;" @click="toEditTag(parent)">{{tagUtil.getLabel(parent, tags)}}</a></div>
                 <div class="row">
                     <input class="col-md-8" list="possibleNewList" placeholder="Eltern-Tag hinzufügen"/>
                     <button class="col-md-3">Hinzufügen</button>
@@ -25,12 +28,20 @@
             <label class="col-md-3" for="listChildren">Kinder</label>
             <div class="col-md-6" id="listChildren">
                 <div v-if="selectedTag.children.length === 0">(keine)</div>
-                <div v-for="child in selectedTag.children"><button title="Löschen" style="padding: 0 0.5em; margin: 0 0 0.3em 0">X</button> <a href="javascript:;" @click="toEditTag(child)">{{child}}</a></div>
+                <div v-for="child in selectedTag.children">
+                    <button title="Löschen" style="padding: 0 0.5em; margin: 0 0 0.3em 0">X</button>
+                    <a href="javascript:;" @click="toEditTag(child)">{{tagUtil.getLabel(child, tags)}}</a></div>
                 <div class="row">
                     <input class="col-md-8" list="possibleNewList" placeholder="Kind-Tag hinzufügen"/>
                     <button class="col-md-3">Hinzufügen</button>
                 </div>
             </div>
+        </div>
+        <div class="row" style="margin-top: 2em">
+            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="revert"><i class="fas fa-undo"></i> Änderungen zurücksetzen</button>
+        </div>
+        <div class="row">
+            <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit')"><i class="fas fa-tree"></i> Zurück zum Baum</button>
         </div>
         <datalist id="possibleNewList">
             <option v-for="tag in possibleNew">{{tag.id}}</option>
@@ -42,6 +53,8 @@
     import {dataService} from "../js/service/data/dataService";
     import {databaseService} from "../js/service/data/databaseService";
     import {tagUtil} from "../js/util/tagUtil";
+    import {util} from "../js/util/util";
+    import {Tags} from "../js/model/Tags";
 
     let thiz = null;
     export default {
@@ -49,7 +62,14 @@
             return {
                 tags: null,
                 selectedTag: null,
-                possibleNew: null
+                originalTagsJSON: null,
+                possibleNew: null,
+                tagUtil: tagUtil
+            }
+        },
+        computed: {
+            dirty: function () {
+                return JSON.stringify(thiz.tags) !== thiz.originalTagsJSON;
             }
         },
         methods: {
@@ -58,24 +78,58 @@
             },
             init() {
                 if (!databaseService.isLoggedInReadWrite()) {
-                    //return thiz.$router.push('/login');
+                    return thiz.$router.push('/login');
                 }
                 dataService.getTags().then(result => {
                     let tags = JSON.parse(JSON.stringify(result)).tags;
+                    thiz.originalTagsJSON = JSON.stringify(tags);
                     thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, tags) || tags[0];
                     thiz.possibleNew = tagUtil.getPossibleNewRelatives(thiz.selectedTag, tags);
-                    log.warn(thiz.possibleNew.map(el => el.id));
                     thiz.tags = tags;
                 });
+            },
+            revert() {
+                thiz.tags = JSON.parse(thiz.originalTagsJSON);
+                thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, thiz.tags) || thiz.tags[0];
+            },
+            save(instant) {
+                if (instant) {
+                    util.clearDebounce();
+                    return dataService.saveTags(new Tags({tags: thiz.tags}));
+                } else {
+                    util.debounce(() => {
+                        dataService.saveTags(new Tags({tags: thiz.tags}));
+                    }, 1000);
+                }
+                return Promise.resolve();
             }
         },
         mounted() {
             thiz = this;
             thiz.init();
         },
-        beforeRouteUpdate (to, from, next) {
-            thiz.init();
-            next();
+        beforeRouteUpdate(to, from, next) {
+            let promises = [];
+            if (databaseService.isLoggedInReadWrite() && thiz.tags && thiz.dirty) {
+                promises.push(thiz.save(true));
+            }
+            Promise.all(promises).then(() => {
+                if (to.path.indexOf('/tag/edit') === 0) {
+                    thiz.init();
+                    next();
+                } else {
+                    next();
+                }
+            });
+        },
+        beforeRouteLeave(to, from, next) {
+            if (databaseService.isLoggedInReadWrite() && thiz.tags && thiz.dirty) {
+                thiz.save(true).then(() => {
+                    next();
+                });
+            } else {
+                next();
+            }
         }
     }
 </script>
@@ -89,5 +143,10 @@
 
     .row {
         margin-top: 0.5em;
+    }
+
+    button {
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
     }
 </style>

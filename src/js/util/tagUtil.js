@@ -44,6 +44,11 @@ tagUtil.getPossibleNewRelatives = function(tagIdOrTag, tags) {
     return tags.filter(tag => childrenIds.indexOf(tag.id) === -1 && parentIds.indexOf(tag.id) === -1);
 };
 
+tagUtil.getLabel = function (tagIdOrTag, tags) {
+    let tag = tagUtil.getTag(tagIdOrTag, tags);
+    return tag.label.de ? tag.label.de : tag.id;
+};
+
 function getAll(tagIdOrTag, tags, getChildren) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
