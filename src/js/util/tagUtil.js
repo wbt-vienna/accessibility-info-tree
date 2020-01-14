@@ -55,6 +55,46 @@ tagUtil.sortTags = function (tagIdsOrTags, tags, returnIds) {
     return returnIds ? tagObjects.map(e => e.id) : tagObjects;
 };
 
+/**
+ * returns the number of times the given tag is a child of any other element
+ * @param tagIdOrTag
+ * @param tags
+ * @return {number}
+ */
+tagUtil.getUsageCount = function (tagIdOrTag, tags) {
+    let searchTag = tagUtil.getTag(tagIdOrTag, tags);
+    let count = 0;
+    tags.forEach(tag => {
+        if (tag.children.indexOf(searchTag.id) !== -1) {
+            count++;
+        }
+    });
+    return count;
+};
+
+/**
+ * deletes a given Tag from the list of all tags
+ * @param tagIdOrTag
+ * @param parentTagIdOrTag the parentTag to definre the location where to remove the given tag
+ * @param tags
+ * @return {number}
+ */
+tagUtil.deleteTag = function (tagIdOrTag, parentTagIdOrTag, tags) {
+    let deleteTag = tagUtil.getTag(tagIdOrTag, tags);
+    let initialUsageCount = tagUtil.getUsageCount(deleteTag, tags);
+    if (initialUsageCount === 1 && deleteTag.children.length > 0) {
+        log.warn('cannot completely remove tags with children, aborting...');
+        return tags;
+    }
+    let parentTag = tagUtil.getTag(parentTagIdOrTag, tags);
+    parentTag.children = parentTag.children.filter(childId => childId !== deleteTag.id);
+    deleteTag.parents = deleteTag.parents.filter(parentId => parentId !== parentTag.id);
+    if (initialUsageCount === 1) {
+        tags = tags.filter(tag => tag.id !== deleteTag.id);
+    }
+    return tags;
+};
+
 function getAll(tagIdOrTag, tags, getChildren) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
