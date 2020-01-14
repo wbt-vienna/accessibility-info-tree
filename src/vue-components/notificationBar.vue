@@ -5,7 +5,7 @@
         <div v-if="actionLink" class="inline">
             <a href="javascript:;" @click="onActionLink" style="color: #44a8f1">{{actionLink}}</a>
         </div>
-        <button @click="tooltipHTML = ''" style="position: absolute; top: 0; right: 10px; padding: 0 10px">X</button>
+        <button :disabled="!tooltipOptions.closeable" @click="tooltipHTML = ''" style="position: absolute; top: 0; right: 10px; padding: 0 10px">X</button>
     </div>
 </template>
 
@@ -20,7 +20,8 @@
         revertOnClose: false,
         actionLink: '',
         actionLinkFn: null,
-        imageUrl: null
+        imageUrl: null,
+        closeable: true
     };
 
     export default {
@@ -68,6 +69,7 @@
             onActionLink() {
                 if (this.tooltipOptions.actionLinkFn) {
                     this.tooltipOptions.actionLinkFn();
+                    this.clearTooltip();
                 }
             },
         },
