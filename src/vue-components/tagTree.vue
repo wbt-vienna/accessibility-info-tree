@@ -14,7 +14,7 @@
             <span v-if="value.parents.length > 0"> -> </span>
             <span>{{getLabel(value.id)}}</span>
         </div>
-        <tree-item v-if="value" :tags="tags" :item="value" :select-tag-fn="selectTag" :actions="actions"/>
+        <tree-item v-if="value" :tags="tags" :item="value" :select-tag-fn="selectTag" :actions="actions" :max-depth="maxDepth"/>
     </div>
 </template>
 
@@ -31,7 +31,9 @@
         },
         components: {TreeItem},
         data() {
-            return {}
+            return {
+                maxDepth: null
+            }
         },
         methods: {
             selectTag(id) {
@@ -45,6 +47,9 @@
         },
         beforeCreate() {
             thiz = this;
+        },
+        mounted() {
+            thiz.maxDepth = tagUtil.getTagsDepth(thiz.tags);
         }
     }
 </script>

@@ -1,12 +1,12 @@
 <template>
     <div v-if="item" style=";">
         <div v-for="childId in item.children" style="display: flex; align-items: center; border: 1px solid gray;">
-            <div class="treeText" :style="getTextStyle(childId)">
+            <div class="treeText" :style="`width: ${90/maxDepth}vw;`">
                 <button v-for="action in actions" style="padding: 0; margin: 0 2px;" @click="action.fn(childId, item.id)" :title="action.title" v-show="action.show ? action.show(childId) : true"><i :class="action.icon"/></button>
                 <a v-if="getTag(childId).children.length > 0" href="javascript:;" @click="selectTagFn(childId)">{{getLabel(childId)}}</a>
                 <span v-else>{{getLabel(childId)}}</span>
             </div>
-            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn" :tags="tags" :actions="actions"></tree-item>
+            <tree-item v-if="getTag(childId).children.length > 0" style="flex: 1 1 auto;" :item="getTag(childId)" :depth="currentDepth" :select-tag-fn="selectTagFn" :tags="tags" :actions="actions" :max-depth="maxDepth"></tree-item>
         </div>
     </div>
 </template>
@@ -21,7 +21,8 @@
             'depth': Number,
             'selectTagFn': Function,
             'tags': Array,
-            actions: Array
+            actions: Array,
+            maxDepth: Number
         },
         data: function () {
             return {
@@ -32,9 +33,6 @@
         methods: {
             getTag(id) {
                 return this.tags.filter(tag => tag.id === id)[0];
-            },
-            getTextStyle(tagId) {
-                return this.getTag(tagId).children.length > 0 ? 'width: 30%;' : 'width: 100%;';
             },
             getLabel(id) {
                 return tagUtil.getLabel(id, this.tags);
