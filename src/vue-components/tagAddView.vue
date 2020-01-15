@@ -1,15 +1,15 @@
 <template>
-    <div v-if="newTag" class="container" @keydown.esc="$router.go(-1)" @keydown.enter="save()">
+    <div v-if="newTag" class="container" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
         <h2>Tag hinzufügen (Kind von '{{tagUtil.getLabel(parentTag)}}')</h2>
         <div class="row">
             <label class="col-md-3" for="idInput" style="align-items: center;">ID</label>
-            <input type="text" class="col-md-6" id="idInput" v-model="newTag.id" v-focus/>
+            <input type="text" class="col-md-6" id="idInput" v-model="newTag.id" v-focus autocomplete="off"/>
             <span class="col-md-2" v-if="tagIds.indexOf(newTag.id) > -1" style="display:flex; align-items: center; color: red">ID bereits vorhanden!</span>
             <span class="col-md-2" v-if="!/^[A-Z_]*$/.test(newTag.id)" style="display:flex; align-items: center; color: red">Nur Großbuchstaben oder "_" erlaubt!</span>
         </div>
         <div class="row">
             <label class="col-md-3" for="labelInput" style="align-items: center;">Label</label>
-            <input type="text" class="col-md-6" id="labelInput" v-model="newTag.label.de"/>
+            <input type="text" class="col-md-6" id="labelInput" v-model="newTag.label.de" autocomplete="off"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="listParents">Eltern</label>
@@ -30,7 +30,7 @@
             <button class="col-md-6 col-md-offset-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-6 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [ENTER]</button>
+            <button class="col-md-6 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [Strg + ENTER]</button>
         </div>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedTag" class="container">
+    <div v-if="selectedTag" class="container" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
         <h2>Tag bearbeiten ({{selectedTag.id}})</h2>
         <div class="row">
             <label class="col-md-3" for="idSpan">ID</label>
@@ -7,7 +7,7 @@
         </div>
         <div class="row">
             <label class="col-md-3" for="labelInput" style="align-items: center;">Label</label>
-            <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de" @input="save()"/>
+            <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de" v-focus autocomplete="off"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="listParents">Eltern</label>
@@ -31,10 +31,13 @@
             </div>
         </div>
         <div class="row" style="margin-top: 2em">
-            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="revert"><i class="fas fa-undo"></i> Änderungen zurücksetzen</button>
+            <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit')"><i class="fas fa-tree"></i> Zurück zum Baum</button>
+            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="save()"><i class="fas fa-check"></i> Speichern [Strg + S]</button>
+        </div>
+        <div class="row">
+            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="saveAndReturn()"><i class="fas fa-check"></i> Speichern und zum Baum [Strg + ENTER]</button>
         </div>
     </div>
 </template>
@@ -76,31 +79,29 @@
                     thiz.originalTagsJSON = JSON.stringify(tags);
                     thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, tags) || tags[0];
                     thiz.tags = tags;
+                    thiz.$nextTick(() => {
+                        document.getElementById('labelInput').focus();
+                    });
                     return Promise.resolve();
                 });
             },
-            revert() {
-                thiz.tags = JSON.parse(thiz.originalTagsJSON);
-                thiz.selectedTag = tagUtil.getTag(thiz.$route.params.tagid, thiz.tags) || thiz.tags[0];
-                thiz.save(true);
-            },
-            save(instant) {
-                if (instant) {
-                    util.clearDebounce();
-                    return dataService.saveTags(new Tags({tags: thiz.tags}));
-                } else {
-                    util.debounce(() => {
-                        dataService.saveTags(new Tags({tags: thiz.tags}));
-                    }, 1000);
+            save() {
+                if (!thiz.selectedTag.label.de) {
+                    return Promise.resolve();
                 }
-                return Promise.resolve();
+                return dataService.saveTags(new Tags({tags: thiz.tags})).then(() => {
+                    thiz.originalTagsJSON = JSON.stringify(thiz.tags);
+                    return Promise.resolve();
+                });
+            },
+            saveAndReturn() {
+                dataService.saveTags(new Tags({tags: thiz.tags})).then(() => {
+                    thiz.$router.go(-1)
+                });
             },
             updateHandler(event, changedDoc) {
                 if (changedDoc.id === constants.TAGS_DOCUMENT_ID) {
-                    let originalJSON = thiz.originalTagsJSON;
-                    thiz.init().then(() => {
-                        thiz.originalTagsJSON = originalJSON;
-                    });
+                    thiz.init();
                 }
             }
         },
@@ -113,24 +114,9 @@
             $(document).off(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
         },
         beforeRouteUpdate(to, from, next) {
-            let promises = [];
-            if (databaseService.isLoggedInReadWrite() && thiz.tags && thiz.dirty) {
-                promises.push(thiz.save(true));
-            }
-            Promise.all(promises).then(() => {
-                if (to.path.indexOf('/tag/edit') === 0) {
-                    thiz.init();
-                    next();
-                } else {
-                    next();
-                }
-            });
-        },
-        beforeRouteLeave(to, from, next) {
-            if (databaseService.isLoggedInReadWrite() && thiz.tags && thiz.dirty) {
-                thiz.save(true).then(() => {
-                    next();
-                });
+            if (to.path.indexOf('/tag/edit') === 0) {
+                thiz.init();
+                next();
             } else {
                 next();
             }
