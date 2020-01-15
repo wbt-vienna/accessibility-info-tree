@@ -80,6 +80,7 @@
                 }
                 thiz.parentTag.children.push(thiz.newTag.id);
                 thiz.tags.push(thiz.newTag);
+                thiz.parentTag.children = tagUtil.sortTags(thiz.parentTag.children, thiz.tags, true);
                 return dataService.saveTags(new Tags({tags: thiz.tags})).then(() => {
                     thiz.$router.go(-1)
                 });
