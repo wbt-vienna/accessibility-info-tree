@@ -15,6 +15,7 @@
     import {dataService} from "../js/service/data/dataService";
     import {databaseService} from "../js/service/data/databaseService";
     import {tagUtil} from "../js/util/tagUtil";
+    import {Tags} from "../js/model/Tags";
 
     let thiz = null;
     export default {
@@ -111,9 +112,11 @@
                                     if (thiz.selectedTag) {
                                         thiz.selectedTag = tagUtil.getTag(thiz.selectedTag.id, thiz.tags);
                                     }
+                                    thiz.save();
                                 }
                             });
                             thiz.tags = tagUtil.deleteTag(id, parentId, thiz.tags);
+                            thiz.save();
                         },
                         show: (id) => {
                             let tag = tagUtil.getTag(id, thiz.tags);
@@ -172,6 +175,7 @@
                 moveTag.parents = tagUtil.sortTags(moveTag.parents, thiz.tags, true);
                 targetParentTag.children = tagUtil.sortTags(targetParentTag.children, thiz.tags, true);
                 thiz.endMoveMode();
+                thiz.save();
             },
             insertAsChild(id, parentId, copy) {
                 if (id === thiz.moveId) {
@@ -192,6 +196,10 @@
                 targetTag.children = tagUtil.sortTags(targetTag.children, thiz.tags, true);
                 moveTag.parents = tagUtil.sortTags(moveTag.parents, thiz.tags, true);
                 thiz.endMoveMode();
+                thiz.save();
+            },
+            save() {
+                return dataService.saveTags(new Tags({tags: thiz.tags}));
             }
         },
         mounted() {
