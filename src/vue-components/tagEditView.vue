@@ -14,7 +14,7 @@
             <div class="col-md-6" id="listParents">
                 <div v-if="selectedTag.parents.length === 0">(keine)</div>
                 <div v-for="parent in selectedTag.parents">
-                    <a href="javascript:;" @click="toEditTag(parent)">{{tagUtil.getLabel(parent, tags)}}</a>
+                    <router-link :to="'/tag/edit/' + parent">{{tagUtil.getLabel(parent, tags)}}</router-link>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
             <div class="col-md-6" id="listChildren">
                 <div v-if="selectedTag.children.length === 0">(keine)</div>
                 <div v-for="child in selectedTag.children">
-                    <a href="javascript:;" @click="toEditTag(child)">{{tagUtil.getLabel(child, tags)}}</a>
+                    <router-link :to="'/tag/edit/' + child">{{tagUtil.getLabel(child, tags)}}</router-link>
                 </div>
                 <div>
                     <router-link :to="'/tag/add/' + selectedTag.id"><i class="fas fa-plus"></i> Kindknoten hinzufügen</router-link>
