@@ -1,3 +1,5 @@
+import {constants} from "./constants";
+
 let tagUtil = {};
 
 /**
@@ -93,6 +95,22 @@ tagUtil.deleteTag = function (tagIdOrTag, parentTagIdOrTag, tags) {
         tags = tags.filter(tag => tag.id !== deleteTag.id);
     }
     return tags;
+};
+
+/**
+ * retrieves the maximum depth of the tree
+ * @param tags list of all tags
+ * @param relativeTag (optional) tag to start, by default the root tag
+ * @return {number}
+ */
+tagUtil.getTagsDepth = function (tags, relativeTag) {
+    relativeTag = relativeTag || tagUtil.getTag(constants.TAG_ROOT_ID, tags);
+    let depths = [];
+    relativeTag.children.forEach(childId => {
+        let child = tagUtil.getTag(childId, tags);
+        depths.push(1 + tagUtil.getTagsDepth(tags, child));
+    });
+    return depths.length > 0 ? Math.max(...depths) : 0;
 };
 
 function getAll(tagIdOrTag, tags, getChildren) {
