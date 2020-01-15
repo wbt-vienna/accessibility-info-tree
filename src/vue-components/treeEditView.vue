@@ -1,6 +1,7 @@
 <template>
     <div>
         <h2>Tags bearbeiten</h2>
+        <span v-if="tags">{{tags.length}} Tags</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags" :actions="actions"></tag-tree>
         <notification-bar ref="notificationBar"></notification-bar>
     </div>
@@ -87,6 +88,14 @@
                             thiz.insertAsChild(id, parentId, true);
                         },
                         show: (id) => thiz.moveMode && thiz.moveTargetIdsChild.indexOf(id) !== -1
+                    },
+                    {
+                        icon: 'fas fa-plus',
+                        title: 'Neuen Tag als Kind dieses Knotens einfügen',
+                        fn: function(id, parentId) {
+                            thiz.$router.push('/tag/add/' + id);
+                        },
+                        show: () => !thiz.moveMode
                     },
                     {
                         icon: 'fas fa-trash-alt',

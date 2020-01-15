@@ -1,6 +1,7 @@
 <template>
     <div>
         <h2>Tag-Baum</h2>
+        <span v-if="tags">{{tags.length}} Tags</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags"></tag-tree>
 
         <h2>Tag-Suche</h2>

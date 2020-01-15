@@ -25,6 +25,9 @@
                 <div v-for="child in selectedTag.children">
                     <a href="javascript:;" @click="toEditTag(child)">{{tagUtil.getLabel(child, tags)}}</a>
                 </div>
+                <div>
+                    <router-link :to="'/tag/add/' + selectedTag.id"><i class="fas fa-plus"></i> Kindknoten hinzufügen</router-link>
+                </div>
             </div>
         </div>
         <div class="row" style="margin-top: 2em">
