@@ -20,13 +20,10 @@ pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress
         include_docs: true
     }).on('change', function (change) {
         // change.id contains the doc id, change.doc contains the doc
-        if (change.deleted) {
-            // document was deleted
-        } else {
-            changeHandler(change);
-        }
+        changeHandler(change);
     }).on('error', function (err) {
-        log.warn('pouchdb changes error: ' + err)
+        log.warn('pouchdb changes error: ');
+        log.warn(err)
     });
     let promise = _pouchDb.logIn(username, password);
     promise.catch(() => {
@@ -76,6 +73,9 @@ pouchDbService.save = function (modelName, data) {
             if (err.error === 'conflict') {
                 log.warn('conflict with remote version updating document with id: ' + data.id);
                 resolve();
+            } else if(err.error === "unauthorized") {
+                log.warn('unauthorized detected');
+                $(document).trigger(constants.EVENT_DB_UNAUTHORIZED);
             } else {
                 log.error(err);
                 reject(err);
@@ -122,6 +122,10 @@ function queryInternal(modelName, id) {
             resolve(objects);
         }).catch(function (err) {
             log.error(err);
+            if (err.error === "unauthorized") {
+                $(document).trigger(constants.EVENT_DB_UNAUTHORIZED);
+                log.warn('unauthorized detected');
+            }
             reject();
         });
     });
