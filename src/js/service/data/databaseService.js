@@ -1,7 +1,11 @@
 import {pouchDbService} from "./pouchDbService";
+import $ from "jquery";
+import {constants} from "../../util/constants";
 
 let databaseService = {};
 let _loggedInUser = null;
+let _successfulUser = null;
+let _successfulPassword = null;
 
 /**
  * logs in read-only user
@@ -140,8 +144,18 @@ function login (user, password) {
     let promise = pouchDbService.initDatabase(user, password, "https://couchdb.asterics-foundation.org:6984/accessibility-info-tree");
     promise.then(() => {
         _loggedInUser = user;
+        _successfulUser = user;
+        _successfulPassword = password;
     });
     return promise;
 };
+
+$(document).on(constants.EVENT_DB_UNAUTHORIZED, () => {
+    if (_successfulUser && _successfulPassword) {
+        log.warn('re-logging in after disconnect!');
+        _loggedInUser = null;
+        login(_successfulUser, _successfulPassword);
+    }
+});
 
 export {databaseService};
