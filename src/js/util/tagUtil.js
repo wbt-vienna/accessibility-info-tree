@@ -18,20 +18,20 @@ tagUtil.getTag = function (tagIdOrTag, tags) {
     return null
 };
 
-tagUtil.getAllChildren = function (tagIdOrTag, tags) {
-    return getAll(tagIdOrTag, tags, true);
+tagUtil.getAllChildren = function (tagIdOrTag, tags, maxDepth) {
+    return getAll(tagIdOrTag, tags, true, maxDepth);
 };
 
-tagUtil.getAllParents = function (tagIdOrTag, tags) {
-    return getAll(tagIdOrTag, tags, false);
+tagUtil.getAllParents = function (tagIdOrTag, tags, maxDepth) {
+    return getAll(tagIdOrTag, tags, false, maxDepth);
 };
 
-tagUtil.getAllChildIds = function (tagIdOrTag, tags) {
-    return tagUtil.getAllChildren(tagIdOrTag, tags).map(child => child.id);
+tagUtil.getAllChildIds = function (tagIdOrTag, tags, maxDepth) {
+    return tagUtil.getAllChildren(tagIdOrTag, tags, maxDepth).map(child => child.id);
 };
 
-tagUtil.getAllParentIds = function (tagIdOrTag, tags) {
-    return tagUtil.getAllParents(tagIdOrTag, tags).map(parent => parent.id);
+tagUtil.getAllParentIds = function (tagIdOrTag, tags, maxDepth) {
+    return tagUtil.getAllParents(tagIdOrTag, tags, maxDepth).map(parent => parent.id);
 };
 
 /**
@@ -113,7 +113,7 @@ tagUtil.getTagsDepth = function (tags, relativeTag) {
     return depths.length > 0 ? Math.max(...depths) : 0;
 };
 
-function getAll(tagIdOrTag, tags, getChildren) {
+function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
         return [];
@@ -123,7 +123,10 @@ function getAll(tagIdOrTag, tags, getChildren) {
     tag[type].forEach(relativeId => {
         let relative = tagUtil.getTag(relativeId, tags);
         allRelatives.push(relative);
-        allRelatives = allRelatives.concat(getAll(relative, tags, getChildren));
+        if (!maxDepth || maxDepth > 1) {
+            let newDepth = !maxDepth ? maxDepth : maxDepth - 1;
+            allRelatives = allRelatives.concat(getAll(relative, tags, getChildren, newDepth));
+        }
     });
     return [...new Set(allRelatives)];
 }
