@@ -10,6 +10,11 @@
             <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de" v-focus autocomplete="off"/>
         </div>
         <div class="row">
+            <label class="col-md-3" for="colorInput" style="align-items: center;">Farbe</label>
+            <input type="color" id="colorInput" v-model="selectedTag.color"/>
+            <button @click="selectedTag.color = ''" style="padding: 0 3px" title="Farbe löschen">X</button>
+        </div>
+        <div class="row">
             <label class="col-md-3" for="listParents">Eltern</label>
             <div class="col-md-6" id="listParents">
                 <div v-if="selectedTag.parents.length === 0">(keine)</div>
@@ -22,10 +27,10 @@
             <label class="col-md-3" for="listChildren">Kinder</label>
             <div class="col-md-6" id="listChildren">
                 <div v-if="selectedTag.children.length === 0">(keine)</div>
-                <div v-for="child in selectedTag.children">
-                    <router-link :to="'/tag/edit/' + child">{{tagUtil.getLabel(child, tags)}}</router-link>
+                <div v-for="child in selectedTag.children" class="routerLink">
+                    <router-link :to="'/tag/edit/' + child"><span class="colorMarker" :style="tagUtil.getColorStyle(child, tags)"></span>{{tagUtil.getLabel(child, tags)}}</router-link>
                 </div>
-                <div>
+                <div class="routerLink">
                     <router-link :to="'/tag/add/' + selectedTag.id"><i class="fas fa-plus"></i> Kindknoten hinzufügen</router-link>
                 </div>
             </div>
@@ -115,6 +120,7 @@
         },
         beforeRouteUpdate(to, from, next) {
             if (to.path.indexOf('/tag/edit') === 0) {
+                thiz.selectedTag = null;
                 thiz.init();
                 next();
             } else {
@@ -138,5 +144,14 @@
     button {
         padding-top: 0.5em;
         padding-bottom: 0.5em;
+    }
+
+    .routerLink {
+        margin-bottom: 5px;
+    }
+
+    .colorMarker {
+        padding: 0 5px;
+        margin: 0 5px 5px 0
     }
 </style>

@@ -5,11 +5,16 @@
             <label class="col-md-3" for="idInput" style="align-items: center;">ID</label>
             <input type="text" class="col-md-6" id="idInput" v-model="newTag.id" v-focus autocomplete="off"/>
             <span class="col-md-2" v-if="tagIds.indexOf(newTag.id) > -1" style="display:flex; align-items: center; color: red">ID bereits vorhanden!</span>
-            <span class="col-md-2" v-if="!/^[A-Z_]*$/.test(newTag.id)" style="display:flex; align-items: center; color: red">Nur Großbuchstaben oder "_" erlaubt!</span>
+            <span class="col-md-2" v-if="!/^[A-Z_0-9]*$/.test(newTag.id)" style="display:flex; align-items: center; color: red">Nur Großbuchstaben, Zahlen oder "_" erlaubt!</span>
         </div>
         <div class="row">
             <label class="col-md-3" for="labelInput" style="align-items: center;">Label</label>
             <input type="text" class="col-md-6" id="labelInput" v-model="newTag.label.de" autocomplete="off"/>
+        </div>
+        <div class="row">
+            <label class="col-md-3" for="colorInput" style="align-items: center;">Farbe</label>
+            <input type="color" id="colorInput" v-model="newTag.color"/>
+            <button @click="newTag.color = ''" style="padding: 0 3px" title="Farbe löschen">X</button>
         </div>
         <div class="row">
             <label class="col-md-3" for="listParents">Eltern</label>
@@ -55,7 +60,7 @@
         },
         computed: {
             valid: function () {
-                return thiz.newTag && thiz.newTag.id && thiz.tagIds.indexOf(thiz.newTag.id) === -1 && thiz.newTag.label.de && /^[A-Z_]*$/.test(thiz.newTag.id);
+                return thiz.newTag && thiz.newTag.id && thiz.tagIds.indexOf(thiz.newTag.id) === -1 && thiz.newTag.label.de && /^[A-Z_0-9]*$/.test(thiz.newTag.id);
             }
         },
         methods: {
