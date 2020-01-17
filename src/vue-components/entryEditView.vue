@@ -3,7 +3,7 @@
         <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
         <div class="row">
             <label class="col-md-3" for="inputHeader">Überschrift</label>
-            <input type="text" class="col-md-8" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="60"/>
+            <input type="text" class="col-md-8" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="linkInput">Link</label>
@@ -56,7 +56,7 @@
         },
         computed: {
             valid: function () {
-                return true;
+                return thiz.editEntry && thiz.editEntry.header;
             }
         },
         methods: {
