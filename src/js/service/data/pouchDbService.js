@@ -108,7 +108,8 @@ function queryInternal(modelName, id) {
     return new Promise((resolve, reject) => {
         log.debug('getting ' + modelName + '(id: ' + id + ')...');
         let query = {
-            selector: {}
+            selector: {},
+            limit: 100000
         };
         if (id) {
             query.selector.id = id;
