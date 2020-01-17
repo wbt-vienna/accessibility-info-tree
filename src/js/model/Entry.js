@@ -1,20 +1,19 @@
 import {ObjectModel} from "objectmodel"
 import {ArrayModel} from "objectmodel";
 import {modelUtil} from "../util/modelUtil";
+import {constants} from "../util/constants";
 
 class Entry extends ObjectModel({
     id: [String],
     modelName: [String],
-    lang: [String],
-    location: [String],
     header: [String],
     link: [String],
     short: [String],
     full: [String],
     created: [Number],
     updated: [Number],
-    types: [ArrayModel(String)],
-    tags: [ArrayModel(String)]
+    tags: [ArrayModel(String)],
+    metaTags: [ArrayModel(String)]
 }) {
     constructor(properties) {
         let defaults = {
@@ -22,6 +21,7 @@ class Entry extends ObjectModel({
             modelName: Entry.getModelName(),
             types: [],
             tags: [],
+            metaTags: [constants.TAG_DE_ID, constants.TAG_AUT_ID, constants.TAG_TYPE_LINK_ID],
             created: new Date().getTime(),
             updated: new Date().getTime()
         };
