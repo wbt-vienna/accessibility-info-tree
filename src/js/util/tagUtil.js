@@ -51,6 +51,20 @@ tagUtil.getLabel = function (tagIdOrTag, tags) {
     return tag.label.de ? tag.label.de : tag.id;
 };
 
+tagUtil.getColor = function (tagIdOrTag, tags) {
+    let tag = tagUtil.getTag(tagIdOrTag, tags);
+    if (tag && !tag.color && tag.parents[0]) {
+        return tagUtil.getColor(tag.parents[0], tags);
+    }
+    return tag ? tag.color : '';
+};
+
+tagUtil.getColorStyle = function(tagIdOrTag, tags) {
+    let color = tagUtil.getColor(tagIdOrTag, tags);
+    let highContrastColor = getHighContrastTextColor(color);
+    return  `background-color: ${color}; color: ${highContrastColor};`;
+};
+
 tagUtil.sortTags = function (tagIdsOrTags, tags, returnIds) {
     let tagObjects = tagIdsOrTags.map(idOrTag => tagUtil.getTag(idOrTag, tags));
     tagObjects.sort((a,b) => (a.label.de || a.id).localeCompare(b.label.de));
@@ -129,6 +143,28 @@ function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
         }
     });
     return [...new Set(allRelatives)];
+}
+
+function getHighContrastTextColor(hexBackground) {
+    if (!hexBackground) {
+        return '';
+    }
+    let rgb = hexToRgb(hexBackground);
+    let val = rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
+    if (val > 149) {
+        return '#000000';
+    } else {
+        return '#ffffff'
+    }
+}
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
 }
 
 export {tagUtil};
