@@ -123,6 +123,9 @@
                         }
                     });
                 }
+                thiz.filteredEntries.sort((a, b) => {
+                    return b.updated - a.updated;
+                });
             }
         },
         mounted() {
