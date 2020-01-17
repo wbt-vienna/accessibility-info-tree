@@ -67,6 +67,9 @@
             },
             removeTag(tagId) {
                 this.elementTags = this.elementTags.filter(existingId => tagId !== existingId);
+                if (this.elementTags.length === 0) {
+                    this.selectTags = this.startTags;
+                }
                 this.emitChange();
             },
             removeAll() {
