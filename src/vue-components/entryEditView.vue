@@ -19,6 +19,12 @@
                 <tag-selector :start-tag-id="constants.TAG_ACCESSIBILITY_ID" :tags="tags" v-model="editEntry.tags"></tag-selector>
             </div>
         </div>
+        <div class="row">
+            <label class="col-md-3" for="inputMetaTags" style="align-items: initial;">Meta-Tags</label>
+            <div class="col-md-8" id="inputMetaTags">
+                <tag-selector :start-tag-id="constants.TAG_META_ID" :tags="tags" v-model="editEntry.metaTags"></tag-selector>
+            </div>
+        </div>
         <div class="row" style="margin-top: 2em">
             <button class="col-md-8 col-md-offset-3" @click="$router.push('/entries')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>

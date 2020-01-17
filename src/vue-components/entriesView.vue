@@ -28,8 +28,11 @@
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank">{{entry.header}}</a>
                     <span class="entryHeader" v-if="!entry.link">{{entry.header}}</span>
                     <p v-if="entry.short">{{entry.short}}</p>
-                    <div v-if="entry.tags.length > 0">
-                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)">
+                    <div v-if="entry.tags.length > 0 || entry.metaTags.length > 0">
+                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)">
+                            {{tagUtil.getLabel(tagId, tags)}}
+                        </button>
+                        <button class="tagButton" v-for="tagId in entry.metaTags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)">
                             {{tagUtil.getLabel(tagId, tags)}}
                         </button>
                     </div>
@@ -104,15 +107,16 @@
                         return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
                     }, thiz.searchTags);
                     thiz.filteredEntries = thiz.entries.filter(entry => {
+                        let allEntryTags = entry.tags.concat(entry.metaTags);
                         if (thiz.joinMode === 'OR') {
                             return totalSearchTags.reduce((total, currentId) => {
-                                return total || entry.tags.indexOf(currentId) !== -1;
+                                return total || allEntryTags.indexOf(currentId) !== -1;
                             }, false);
                         } else {
                             return thiz.searchTags.reduce((total, currentId) => {
                                 let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
                                 let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
-                                    return totalAny || entry.tags.indexOf(possibleTag) !== -1;
+                                    return totalAny || allEntryTags.indexOf(possibleTag) !== -1;
                                 }, false);
                                 return total && hasAny;
                             }, true);
@@ -134,7 +138,7 @@
 
 <style scoped>
     .actionBtn {
-        padding: 0;
+        padding: 0 3px;
         margin: 0 2px;
     }
 
