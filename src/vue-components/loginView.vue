@@ -11,6 +11,7 @@
     import TreeItem from "./treeItem.vue"
     import {databaseService} from "../js/service/data/databaseService";
 
+    let fromRoute = null;
     let thiz = null;
     export default {
         components: {TreeItem},
@@ -24,7 +25,7 @@
             login() {
                 thiz.wrongPassword = false;
                 databaseService.loginReadWrite(this.password).then(() => {
-                    thiz.$router.push('/tree/edit');
+                    thiz.$router.push(fromRoute);
                 }).catch(() => {
                     thiz.wrongPassword = true;
                 });
@@ -32,7 +33,11 @@
         },
         mounted() {
             thiz = this;
-        }
+        },
+        beforeRouteEnter (to, from, next) {
+            fromRoute = from.path;
+            next();
+        },
     }
 </script>
 
