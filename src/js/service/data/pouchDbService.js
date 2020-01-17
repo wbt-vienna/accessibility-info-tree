@@ -23,7 +23,8 @@ pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress
         changeHandler(change);
     }).on('error', function (err) {
         log.warn('pouchdb changes error: ');
-        log.warn(err)
+        log.warn(err);
+        $(document).trigger(constants.EVENT_DB_UNAUTHORIZED);
     });
     let promise = _pouchDb.logIn(username, password);
     promise.catch(() => {
