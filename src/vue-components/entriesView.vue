@@ -75,6 +75,9 @@
                 });
             },
             updateHandler(event, changedDoc) {
+                if (!thiz.entries) {
+                    return;
+                }
                 if (changedDoc._id.indexOf(Entry.getModelName()) === 0 || changedDoc.id === constants.TAGS_DOCUMENT_ID) {
                     thiz.init();
                 }
@@ -120,8 +123,8 @@
         },
         mounted() {
             thiz = this;
-            thiz.init();
             $(document).on(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
+            thiz.init();
         },
         beforeDestroy() {
             $(document).off(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
