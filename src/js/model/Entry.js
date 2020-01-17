@@ -11,6 +11,8 @@ class Entry extends ObjectModel({
     link: [String],
     short: [String],
     full: [String],
+    created: [Number],
+    updated: [Number],
     types: [ArrayModel(String)],
     tags: [ArrayModel(String)]
 }) {
@@ -19,7 +21,9 @@ class Entry extends ObjectModel({
             id: "",
             modelName: Entry.getModelName(),
             types: [],
-            tags: []
+            tags: [],
+            created: new Date().getTime(),
+            updated: new Date().getTime()
         };
         properties = properties || {};
         super(Object.assign(defaults, properties));
@@ -30,12 +34,5 @@ class Entry extends ObjectModel({
         return "Entry";
     }
 }
-
-Entry.defaultTo({
-    id: "",
-    modelName: Entry.getModelName(),
-    types: [],
-    tags: []
-});
 
 export {Entry};

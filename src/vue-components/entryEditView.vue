@@ -72,6 +72,9 @@
                 if (!thiz.valid) {
                     return;
                 }
+                if (!thiz.isNew) {
+                    thiz.editEntry.updated = new Date().getTime();
+                }
                 dataService.saveEntry(thiz.editEntry).then(() => {
                     thiz.$router.push('/entries');
                 });
