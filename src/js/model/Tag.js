@@ -5,6 +5,7 @@ let Tag = ObjectModel({
     id: [String],
     modelName: [String],
     label: [Object],
+    color: [String],
     parents: ArrayModel(String),
     children: ArrayModel(String),
 }).defaultTo({
