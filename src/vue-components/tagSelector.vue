@@ -3,14 +3,14 @@
         <div class="col-md-4">
             Gewählte Tags <a href="javascript:;" @click="removeAll">alle löschen</a>
             <div>
-                <button class="tagButton" @click="removeTag(tagId)" v-for="tagId in elementTags"><i class="fas fa-times"></i> {{tagUtil.getLabel(tagId, tags)}}</button>
+                <button class="tagButton" @click="removeTag(tagId)" v-for="tagId in elementTags" :style="tagUtil.getColorStyle(tagId, tags)"><i class="fas fa-times"></i> {{tagUtil.getLabel(tagId, tags)}}</button>
                 <span v-if="elementTags.length === 0">(keine)</span>
             </div>
         </div>
         <div class="col-md-8">
             Tags wählen <a href="javascript:;" @click="selectTags = startTags">alle anzeigen</a>
             <div>
-                <button class="tagButton" @click="addTag(tag.id)" v-for="tag in selectTags"><i class="fas fa-plus"></i> {{tag.label.de}}</button>
+                <button class="tagButton" @click="addTag(tag.id)" v-for="tag in selectTags" :style="tagUtil.getColorStyle(tag.id, tags)"><i class="fas fa-plus"></i> {{tag.label.de}}</button>
             </div>
         </div>
     </div>
@@ -19,7 +19,6 @@
 <script>
     import {tagUtil} from "../js/util/tagUtil";
 
-    let thiz = null;
     export default {
         props: {
             value: Array,
@@ -29,13 +28,13 @@
         watch: {
             value: {
                 handler(val){
-                    thiz.elementTags = val;
+                    this.elementTags = val;
                 },
                 deep: true
             },
             tags: {
                 handler(val){
-                    thiz.startTags = thiz.selectTags = tagUtil.getAllChildren(thiz.startTagId, val, 1);
+                    this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagId, val, 1);
                 },
                 deep: true
             },
@@ -50,41 +49,38 @@
         },
         methods: {
             addTag(tagId) {
-                let parentIds = tagUtil.getAllParentIds(tagId, thiz.tags, 1);
-                let childIds = tagUtil.getAllChildIds(tagId, thiz.tags);
+                let parentIds = tagUtil.getAllParentIds(tagId, this.tags, 1);
+                let childIds = tagUtil.getAllChildIds(tagId, this.tags);
                 let hasAlreadyChild = childIds.reduce((total, currentId) => {
-                    return thiz.elementTags.indexOf(currentId) !== -1;
+                    return total || this.elementTags.indexOf(currentId) !== -1;
                 }, false);
                 if (!hasAlreadyChild) {
-                    thiz.elementTags.push(tagId);
+                    this.elementTags.push(tagId);
                 }
-                thiz.elementTags = thiz.elementTags.filter(existingId => parentIds.indexOf(existingId) === -1);
-                thiz.selectTags = tagUtil.getAllChildren(tagId, thiz.tags, 1);
-                if (thiz.selectTags.length === 0) {
-                    thiz.selectTags = thiz.startTags;
+                this.elementTags = this.elementTags.filter(existingId => parentIds.indexOf(existingId) === -1);
+                this.selectTags = tagUtil.getAllChildren(tagId, this.tags, 1);
+                if (this.selectTags.length === 0) {
+                    this.selectTags = this.startTags;
                 }
-                thiz.elementTags = [...new Set(thiz.elementTags)];
-                thiz.emitChange();
+                this.elementTags = [...new Set(this.elementTags)];
+                this.emitChange();
             },
             removeTag(tagId) {
-                thiz.elementTags = thiz.elementTags.filter(existingId => tagId !== existingId);
-                thiz.emitChange();
+                this.elementTags = this.elementTags.filter(existingId => tagId !== existingId);
+                this.emitChange();
             },
             removeAll() {
-                thiz.selectTags = thiz.startTags;
-                thiz.elementTags = [];
-                thiz.emitChange();
+                this.selectTags = this.startTags;
+                this.elementTags = [];
+                this.emitChange();
             },
             emitChange() {
-                thiz.$emit('input', thiz.elementTags);
-                thiz.$emit('change', thiz.elementTags);
+                this.$emit('input', this.elementTags);
+                this.$emit('change', this.elementTags);
             }
         },
-        beforeCreate() {
-            thiz = this;
-        },
         mounted() {
-            thiz.startTags = thiz.selectTags = tagUtil.getAllChildren(thiz.startTagId, thiz.tags, 1);
+            this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagId, this.tags, 1);
         }
     }
 </script>
