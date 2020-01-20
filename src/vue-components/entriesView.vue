@@ -74,11 +74,12 @@
         },
         methods: {
             init() {
-                dataService.getTags().then(result => {
+                return dataService.getTags().then(result => {
                     thiz.tags = JSON.parse(JSON.stringify(result)).tags;
-                    dataService.getEntries().then(entries => {
-                        thiz.entries = thiz.filteredEntries = JSON.parse(JSON.stringify(entries));
+                    return dataService.getEntries().then(entries => {
+                        thiz.entries = JSON.parse(JSON.stringify(entries));
                         thiz.filterChanged();
+                        return Promise.resolve();
                     });
                 });
             },
@@ -106,6 +107,9 @@
             },
             filterChanged(debounceTime) {
                 util.debounce(() => {
+                    if (!thiz.entries) {
+                        return;
+                    }
                     thiz.filteredEntries = thiz.entries;
                     if (thiz.searchText) {
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
@@ -147,8 +151,9 @@
         },
         mounted() {
             thiz = this;
-            $(document).on(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
-            thiz.init();
+            thiz.init().then(() => {
+                $(document).on(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
+            });
         },
         beforeDestroy() {
             $(document).off(constants.EVENT_DB_PULL_UPDATED, thiz.updateHandler);
