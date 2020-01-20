@@ -63,6 +63,7 @@
                     this.selectTags = this.startTags;
                 }
                 this.elementTags = [...new Set(this.elementTags)];
+                this.elementTags.sort();
                 this.emitChange();
             },
             removeTag(tagId) {
@@ -84,6 +85,7 @@
         },
         mounted() {
             this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagId, this.tags, 1);
+            this.elementTags.sort();
         }
     }
 </script>
