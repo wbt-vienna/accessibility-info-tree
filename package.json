@@ -4,7 +4,6 @@
   "description": "Structured information collection about all kinds of topics in the field of accessibility ",
   "main": "index.js",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.12.0",
     "jquery": "^3.4.1",
     "loglevel": "^1.6.6",
     "mini.css": "^3.0.1",

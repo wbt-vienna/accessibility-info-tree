@@ -10,7 +10,6 @@ import EntriesView from '../vue-components/entriesView.vue'
 import * as log from 'loglevel';
 import {databaseService} from "./service/data/databaseService";
 import 'mini.css';
-import '@fortawesome/fontawesome-free/js/all.min'
 
 function init() {
     window.log = log;
