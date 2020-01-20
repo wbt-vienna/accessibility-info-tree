@@ -6,6 +6,7 @@ import {Entry} from "../../model/Entry";
 
 let dataService = {};
 let lastTags = null;
+let lastEntries = null;
 
 dataService.getTags = function () {
     if (lastTags) {
@@ -27,8 +28,13 @@ dataService.saveTags = function (tagData) {
 };
 
 dataService.getEntries = function() {
+    if (lastEntries) {
+        return Promise.resolve(lastEntries);
+    }
     return databaseService.getObject(Entry).then(result => {
-        return Promise.resolve(result ? (result instanceof Array ? result : [result]) : [])
+        let list = result ? (result instanceof Array ? result : [result]) : [];
+        lastEntries = JSON.parse(JSON.stringify(list));
+        return Promise.resolve(list)
     });
 };
 
@@ -40,10 +46,15 @@ dataService.getEntry = function (id) {
 };
 
 dataService.saveEntry = function (entry) {
+    if (lastEntries) {
+        lastEntries = lastEntries.filter(e => e.id !== entry.id);
+        lastEntries.push(entry);
+    }
     return databaseService.saveObject(Entry, entry);
 };
 
 dataService.remove = function(id) {
+    lastEntries = null;
     return databaseService.removeObject(id);
 };
 
@@ -51,10 +62,12 @@ $(document).on(constants.EVENT_DB_PULL_UPDATED, (event, changedDoc) => {
     if (changedDoc.id === constants.TAGS_DOCUMENT_ID) {
         lastTags = changedDoc;
     }
+    lastEntries = null;
 });
 
 $(document).on(constants.EVENT_DB_UNAUTHORIZED, () => {
     lastTags = null;
+    lastEntries = null;
 });
 
 export {dataService};
