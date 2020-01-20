@@ -8,6 +8,7 @@ PouchDB.plugin(PouchFind);
 
 let pouchDbService = {};
 let _pouchDb = null;
+let _knownRevs = [];
 
 pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress) {
     if (_pouchDb) {
@@ -19,7 +20,6 @@ pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress
         live: true,
         include_docs: true
     }).on('change', function (change) {
-        // change.id contains the doc id, change.doc contains the doc
         changeHandler(change);
     }).on('error', function (err) {
         log.warn('pouchdb changes error: ');
@@ -68,6 +68,7 @@ pouchDbService.save = function (modelName, data) {
         data._id = data.id;
         _pouchDb.put(data).then((response) => {
             data._rev = response.rev;
+            _knownRevs.push(response.rev);
             log.debug('updated ' + modelName + ', id: ' + data._id);
             resolve();
         }).catch(function (err) {
@@ -151,6 +152,12 @@ function dbResToResolveObject(res) {
             }
         });
     }
+    objects.forEach(object => {
+        let rev = object._rev;
+        if (_knownRevs.indexOf(rev) === -1) {
+            _knownRevs.push(rev);
+        }
+    });
     if (objects.length === 0) {
         return null;
     } else if (objects.length === 1) {
@@ -161,7 +168,11 @@ function dbResToResolveObject(res) {
 }
 
 function changeHandler(change) {
-    $(document).trigger(constants.EVENT_DB_PULL_UPDATED, [change.doc]);
+    let rev = change.doc._rev;
+    if (_knownRevs.indexOf(rev) === -1) {
+        _knownRevs.push(rev);
+        $(document).trigger(constants.EVENT_DB_PULL_UPDATED, [change.doc]);
+    }
 }
 
 export {pouchDbService};
