@@ -7,14 +7,17 @@
         <h3>Filter</h3>
         <div>
             <label for="inputChkOr" style="padding: 0">Verknüpfungsmodus</label>
-            <select id="inputChkOr" v-model="joinMode" @change="filterChanged">
+            <select id="inputChkOr" v-model="joinMode" @change="filterChanged()">
                 <option value="OR">ODER</option>
                 <option value="AND">UND</option>
             </select>
         </div>
         <div v-if="tags">
             <tag-selector :start-tag-id="constants.TAG_ACCESSIBILITY_ID" :tags="tags" v-model="searchTags"
-                          @change="filterChanged"></tag-selector>
+                          @change="filterChanged()"></tag-selector>
+        </div>
+        <div class="row" v-if="tags">
+            <input class="col-md-4" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-top: 1em" v-focus/>
         </div>
         <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
         <span>({{filteredEntries.length}} Ergebnisse)</span>
@@ -51,6 +54,7 @@
     import {tagUtil} from "../js/util/tagUtil";
     import TagSelector from "./tagSelector.vue"
     import {Entry} from "../js/model/Entry";
+    import {util} from "../js/util/util";
 
     let thiz = null;
     export default {
@@ -62,6 +66,7 @@
                 filteredEntries: [],
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchTags: [],
+                searchText: "",
                 joinMode: "OR",
                 tagUtil: tagUtil,
                 constants: constants
@@ -99,33 +104,45 @@
                 dataService.remove(entry.id);
                 thiz.filterChanged();
             },
-            filterChanged() {
-                if (thiz.searchTags.length === 0) {
+            filterChanged(debounceTime) {
+                util.debounce(() => {
                     thiz.filteredEntries = thiz.entries;
-                } else {
-                    let totalSearchTags = thiz.searchTags.reduce((total, currentId) => {
-                        return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
-                    }, thiz.searchTags);
-                    thiz.filteredEntries = thiz.entries.filter(entry => {
-                        let allEntryTags = entry.tags.concat(entry.metaTags);
-                        if (thiz.joinMode === 'OR') {
-                            return totalSearchTags.reduce((total, currentId) => {
-                                return total || allEntryTags.indexOf(currentId) !== -1;
+                    if (thiz.searchText) {
+                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
+                            let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
+                            let allTags = entry.tags.concat(entry.metaTags);
+                            let inTags = allTags.reduce((total, currentTagId) => {
+                                let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
+                                return total || tagLabel.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             }, false);
-                        } else {
-                            return thiz.searchTags.reduce((total, currentId) => {
-                                let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
-                                let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
-                                    return totalAny || allEntryTags.indexOf(possibleTag) !== -1;
+                            return inHeader || inTags;
+                        });
+                    }
+                    if (thiz.searchTags.length > 0) {
+                        let totalSearchTags = thiz.searchTags.reduce((total, currentId) => {
+                            return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
+                        }, thiz.searchTags);
+                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
+                            let allEntryTags = entry.tags.concat(entry.metaTags);
+                            if (thiz.joinMode === 'OR') {
+                                return totalSearchTags.reduce((total, currentId) => {
+                                    return total || allEntryTags.indexOf(currentId) !== -1;
                                 }, false);
-                                return total && hasAny;
-                            }, true);
-                        }
+                            } else {
+                                return thiz.searchTags.reduce((total, currentId) => {
+                                    let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
+                                    let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
+                                        return totalAny || allEntryTags.indexOf(possibleTag) !== -1;
+                                    }, false);
+                                    return total && hasAny;
+                                }, true);
+                            }
+                        });
+                    }
+                    thiz.filteredEntries.sort((a, b) => {
+                        return b.updated - a.updated;
                     });
-                }
-                thiz.filteredEntries.sort((a, b) => {
-                    return b.updated - a.updated;
-                });
+                }, debounceTime ? debounceTime : 0);
             }
         },
         mounted() {
