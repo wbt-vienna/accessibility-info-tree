@@ -81,6 +81,9 @@
                 if (!thiz.isNew) {
                     thiz.editEntry.updated = new Date().getTime();
                 }
+                if (!thiz.editEntry.link) {
+                    thiz.editEntry.link = 'https://www.google.com/search?q=' + thiz.editEntry.header;
+                }
                 dataService.saveEntry(thiz.editEntry).then(() => {
                     thiz.$router.push('/entries');
                 });
