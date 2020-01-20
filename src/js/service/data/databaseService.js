@@ -1,6 +1,7 @@
 import {pouchDbService} from "./pouchDbService";
 import $ from "jquery";
 import {constants} from "../../util/constants";
+import Vue from 'vue'
 
 let databaseService = {};
 let _loggedInUser = null;
@@ -132,7 +133,8 @@ databaseService.removeObject = function (id) {
 
 function checkIfLoggedIn() {
     if (!pouchDbService.isLoggedIn()) {
-        throw "not logged in!";
+        log.warn('not logged in! redirecting to login...');
+        Vue.$router.push('/login');
     }
 }
 
