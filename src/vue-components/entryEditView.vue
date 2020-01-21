@@ -11,7 +11,7 @@
         </div>
         <div class="row">
             <label class="col-md-3" for="shortInput">Kurzbeschreibung</label>
-            <textarea class="col-md-8" id="shortInput" v-model="editEntry.short" maxlength="150"/>
+            <textarea class="col-md-8" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="inputTags" style="align-items: initial;">Tags</label>
