@@ -24,19 +24,17 @@
         <div>
             <ul>
                 <li v-for="entry in filteredEntries">
-                    <button v-if="canEdit" class="actionBtn" @click="$router.push('/entry/edit/' + entry.id)"
-                            title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></button>
+                    <router-link v-if="canEdit" class="button actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
                     <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
                             class="fas fa-trash-alt"/></button>
-                    <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank">{{entry.header}}</a>
-                    <span class="entryHeader" v-if="!entry.link">{{entry.header}}</span>
-                    <p v-if="entry.short">{{entry.short}}</p>
+
+                    <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header)"></a>
+                    <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
+                    <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
                     <div v-if="entry.tags.length > 0 || entry.metaTags.length > 0">
-                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)">
-                            {{tagUtil.getLabel(tagId, tags)}}
+                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
                         </button>
-                        <button class="tagButton" v-for="tagId in entry.metaTags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)">
-                            {{tagUtil.getLabel(tagId, tags)}}
+                        <button class="tagButton" v-for="tagId in entry.metaTags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
                         </button>
                     </div>
                 </li>
@@ -105,6 +103,16 @@
                 dataService.remove(entry.id);
                 thiz.filterChanged();
             },
+            highlightInHTML(text) {
+                if (thiz.searchText.length < 3) {
+                    return text;
+                }
+                let matches = [...text.matchAll(new RegExp(thiz.searchText, 'gi'))];
+                matches.forEach(match => {
+                    text = text.replace(match[0], `<b>${match[0]}</b>`);
+                });
+                return text;
+            },
             filterChanged(debounceTime) {
                 util.debounce(() => {
                     if (!thiz.entries) {
@@ -115,12 +123,13 @@
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
                             let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
+                            let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1 : false;
                             let allTags = entry.tags.concat(entry.metaTags);
                             let inTags = allTags.reduce((total, currentTagId) => {
                                 let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
                                 return total || tagLabel.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             }, false);
-                            return inHeader || inTags || inLink;
+                            return inHeader || inTags || inLink || inShort;
                         });
                     }
                     if (thiz.searchTags.length > 0) {
