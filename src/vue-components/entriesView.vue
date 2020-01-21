@@ -114,12 +114,13 @@
                     if (thiz.searchText) {
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
                             let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
+                            let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             let allTags = entry.tags.concat(entry.metaTags);
                             let inTags = allTags.reduce((total, currentTagId) => {
                                 let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
                                 return total || tagLabel.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             }, false);
-                            return inHeader || inTags;
+                            return inHeader || inTags || inLink;
                         });
                     }
                     if (thiz.searchTags.length > 0) {
