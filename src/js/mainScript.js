@@ -23,6 +23,8 @@ function init() {
         {path: '/entry/edit/:editid', component: EntryEditView},
         {path: '/entry/edit', component: EntryEditView},
         {path: '/entries', component: EntriesView},
+        {path: '/entries/search/:searchtext', component: EntriesView},
+        {path: '/entries/search/tag/:searchtags', component: EntriesView},
         {path: '*', redirect: '/entries'}
     ];
 

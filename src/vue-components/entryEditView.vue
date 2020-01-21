@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="row" style="margin-top: 2em">
-            <button class="col-md-8 col-md-offset-3" @click="$router.push('/entries')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            <button class="col-md-8 col-md-offset-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
             <button class="col-md-8 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern [Strg + ENTER]</button>
@@ -85,7 +85,7 @@
                     thiz.editEntry.link = 'https://www.google.com/search?q=' + thiz.editEntry.header;
                 }
                 dataService.saveEntry(thiz.editEntry).then(() => {
-                    thiz.$router.push('/entries');
+                    thiz.$router.go(-1);
                 });
             }
         },

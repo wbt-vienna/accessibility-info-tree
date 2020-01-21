@@ -22,7 +22,8 @@
         <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
         <span>({{filteredEntries.length}} Ergebnisse)</span>
         <div>
-            <ul>
+            <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
+            <ul v-if="!loading">
                 <li v-for="entry in filteredEntries">
                     <router-link v-if="canEdit" class="button actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
                     <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
@@ -39,7 +40,7 @@
                     </div>
                 </li>
             </ul>
-            <span v-if="filteredEntries.length === 0">keine Einträge.</span>
+            <span v-if="!loading && filteredEntries.length === 0">keine Einträge.</span>
         </div>
     </div>
 </template>
@@ -64,16 +65,25 @@
                 filteredEntries: [],
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchTags: [],
-                searchText: "",
+                searchText: this.$route.params.searchtext || "",
                 joinMode: "OR",
                 tagUtil: tagUtil,
-                constants: constants
+                constants: constants,
+                loading: true
             }
         },
         methods: {
             init() {
                 return dataService.getTags().then(result => {
                     thiz.tags = JSON.parse(JSON.stringify(result)).tags;
+                    let tagParams = thiz.$route.params.searchtags ? thiz.$route.params.searchtags.split(';') : [];
+                    tagParams.forEach(tagParam => {
+                        let tag = tagUtil.getTag(tagParam, thiz.tags);
+                        if (tag) {
+                            thiz.searchTags.push(tag.id);
+                        }
+                    });
+
                     return dataService.getEntries().then(entries => {
                         thiz.entries = JSON.parse(JSON.stringify(entries));
                         thiz.filterChanged();
@@ -114,12 +124,15 @@
                 return text;
             },
             filterChanged(debounceTime) {
+                if (!thiz.entries) {
+                    return;
+                }
                 util.debounce(() => {
-                    if (!thiz.entries) {
-                        return;
-                    }
+                    thiz.loading = true;
                     thiz.filteredEntries = thiz.entries;
+                    history.pushState(null, null, '#/entries/');
                     if (thiz.searchText) {
+                        history.pushState(null, null, '#/entries/search/' + thiz.searchText);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
                             let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
@@ -133,6 +146,7 @@
                         });
                     }
                     if (thiz.searchTags.length > 0) {
+                        history.pushState(null, null, '#/entries/search/tag/' + thiz.searchTags.reduce((total, current) => total + current + ';', ''));
                         let totalSearchTags = thiz.searchTags.reduce((total, currentId) => {
                             return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
                         }, thiz.searchTags);
@@ -156,6 +170,7 @@
                     thiz.filteredEntries.sort((a, b) => {
                         return b.updated - a.updated;
                     });
+                    thiz.loading = false;
                 }, debounceTime ? debounceTime : 0);
             }
         },
