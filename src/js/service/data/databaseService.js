@@ -7,6 +7,7 @@ let databaseService = {};
 let _loggedInUser = null;
 let _successfulUser = null;
 let _successfulPassword = null;
+let _timeoutHandler = null;
 
 /**
  * logs in read-only user
@@ -139,6 +140,7 @@ function checkIfLoggedIn() {
 }
 
 function login (user, password) {
+    clearTimeout(_timeoutHandler);
     if (_loggedInUser === user) {
         return Promise.resolve();
     }
@@ -155,8 +157,10 @@ function login (user, password) {
 $(document).on(constants.EVENT_DB_UNAUTHORIZED, () => {
     if (_successfulUser && _successfulPassword) {
         log.warn('re-logging in after disconnect!');
-        _loggedInUser = null;
-        login(_successfulUser, _successfulPassword);
+        _timeoutHandler = setTimeout(() => {
+            _loggedInUser = null;
+            login(_successfulUser, _successfulPassword);
+        }, 5000);
     }
 });
 
