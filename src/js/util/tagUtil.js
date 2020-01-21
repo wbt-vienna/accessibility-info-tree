@@ -9,13 +9,18 @@ let tagUtil = {};
  * @return {null|{id}|*} tagIdOrTag if it already is a tag object, otherwise the object with the given ID from the tags array parameter
  */
 tagUtil.getTag = function (tagIdOrTag, tags) {
+    let returnValue = null;
     if (tagIdOrTag && tagIdOrTag.id) {
-        return tagIdOrTag;
+        returnValue = tagIdOrTag;
     }
     if (tags && typeof tagIdOrTag === 'string' || tagIdOrTag instanceof String) {
-        return tags.filter(tag => tag.id === tagIdOrTag)[0];
+        returnValue = tags.filter(tag => tag.id === tagIdOrTag)[0];
     }
-    return null
+    return returnValue ? returnValue : tagUtil.getTagFromLabel(tagIdOrTag, tags);
+};
+
+tagUtil.getTagFromLabel = function(label, tags) {
+    return tags.filter(tag => tagUtil.getLabel(tag, tags) === label)[0];
 };
 
 tagUtil.getAllChildren = function (tagIdOrTag, tags, maxDepth) {
