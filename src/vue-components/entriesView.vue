@@ -86,6 +86,33 @@
 
                     return dataService.getEntries().then(entries => {
                         thiz.entries = JSON.parse(JSON.stringify(entries));
+
+                        let printSQL = false;
+                        if (printSQL) {
+                            let sql = "DELETE FROM label_label; DELETE FROM label; ";
+                            thiz.tags.forEach(tag => {
+                                let color = tag.color ? `'${tag.color}'` : "NULL";
+                                sql += `INSERT INTO label VALUES ('${tag.id}', '${tag.label.de}', NULL, ${color}); `;
+                            });
+                            thiz.tags.forEach(tag => {
+                                tag.parents.forEach(parent => {
+                                    sql += `INSERT INTO label_label VALUES (NULL, '${tag.id}', '${parent}', NULL); `;
+                                });
+                                tag.children.forEach(child => {
+                                    sql += `INSERT INTO label_label VALUES (NULL, '${tag.id}', NULL, '${child}'); `;
+                                });
+                            });
+                            log.warn('tags SQL:');
+                            log.warn(sql);
+                            sql = "DELETE FROM entry; ";
+                            thiz.entries.forEach(entry => {
+                                let short = entry.short ? `'${entry.short}'` : "NULL";
+                                sql += `INSERT INTO entry VALUES (NULL, '${entry.header}', '${entry.link}', ${short}, NULL, from_unixtime(${Math.round(entry.created / 1000)}), from_unixtime(${Math.round(entry.updated / 1000)})); `
+                            });
+                            log.warn('entries SQL:');
+                            log.warn(sql);
+                        }
+
                         thiz.filterChanged();
                         return Promise.resolve();
                     });
