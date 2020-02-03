@@ -9,6 +9,7 @@ import cors from "cors";
 import path from "path";
 import {tagUtil} from "../src/js/util/tagUtil.mjs";
 import NodeCouchDb from "node-couchdb";
+const __dirname = path.resolve();
 
 var isProd = process.argv.length > 2 && process.argv[2] === 'prod';
 let couchDb = new NodeCouchDb({
