@@ -3,11 +3,17 @@
         <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
         <div class="row">
             <label class="col-md-3" for="inputHeader">Überschrift*</label>
-            <input type="text" class="col-md-8" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80"/>
+            <input type="text" class="col-md-8" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="linkInput">Link</label>
-            <input type="text" class="col-md-8" id="linkInput" v-model="editEntry.link" autocomplete="off"/>
+            <input type="text" class="col-md-8" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
+        </div>
+        <div class="row" v-if="isNew && existingSimilar.length > 0">
+            <label class="col-md-3" for="existingEntries" style="font-weight: normal; font-style: italic">Bereits existierende Einträge</label>
+            <ul id="existingEntries" style="list-style-type: none; padding-left: 0">
+                <li v-for="entry in existingSimilar"><a :href="entry.link" target="_blank">{{entry.header}}</a></li>
+            </ul>
         </div>
         <div class="row">
             <label class="col-md-3" for="shortInput">Kurzbeschreibung</label>
@@ -50,6 +56,8 @@
     import TagSelector from "./tagSelector.vue"
     import {constants} from "../js/util/constants";
     import {localStorageService} from "../js/service/data/localStorageService";
+    import {util} from "../js/util/util";
+    import {entryUtil} from "../js/util/entryUtil";
 
     let thiz = null;
     export default {
@@ -57,9 +65,11 @@
         data() {
             return {
                 tags: null,
+                entries: null,
                 editEntry: null,
                 lastUpdatedBy: "",
                 isNew: false,
+                existingSimilar: [],
                 tagUtil: tagUtil,
                 constants: constants
             }
@@ -74,16 +84,19 @@
                 if (!databaseService.isLoggedInReadWrite()) {
                     return thiz.$router.push('/login');
                 }
-                return dataService.getTags().then(result => {
-                    let tags = JSON.parse(JSON.stringify(result)).tags;
-                    thiz.tags = tags;
-                    dataService.getEntry(thiz.$route.params.editid).then(result => {
-                        thiz.isNew = !result;
-                        thiz.editEntry = result ? JSON.parse(JSON.stringify(result)) : new Entry();
-                        thiz.lastUpdatedBy = thiz.editEntry.updatedBy;
-                        thiz.editEntry.updatedBy = localStorageService.getUser() || "";
+                return dataService.getEntries().then(entries => {
+                    thiz.entries = entries;
+                    return dataService.getTags().then(result => {
+                        let tags = JSON.parse(JSON.stringify(result)).tags;
+                        thiz.tags = tags;
+                        dataService.getEntry(thiz.$route.params.editid).then(result => {
+                            thiz.isNew = !result;
+                            thiz.editEntry = result ? JSON.parse(JSON.stringify(result)) : new Entry();
+                            thiz.lastUpdatedBy = thiz.editEntry.updatedBy;
+                            thiz.editEntry.updatedBy = localStorageService.getUser() || "";
+                        });
+                        return Promise.resolve();
                     });
-                    return Promise.resolve();
                 });
             },
             save() {
@@ -100,6 +113,11 @@
                 dataService.saveEntry(thiz.editEntry).then(() => {
                     thiz.$router.go(-1);
                 });
+            },
+            recomputeSimilar() {
+                util.debounce(() => {
+                    thiz.existingSimilar = entryUtil.getSimilar(thiz.editEntry, thiz.entries);
+                }, 500, "recompute");
             }
         },
         mounted() {
