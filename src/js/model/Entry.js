@@ -2,6 +2,7 @@ import {ObjectModel} from "objectmodel"
 import {ArrayModel} from "objectmodel";
 import {modelUtil} from "../util/modelUtil";
 import {constants} from "../util/constants";
+import {localStorageService} from "../service/data/localStorageService";
 
 class Entry extends ObjectModel({
     id: [String],
@@ -12,6 +13,7 @@ class Entry extends ObjectModel({
     full: [String],
     created: [Number],
     updated: [Number],
+    updatedBy: [String],
     tags: [ArrayModel(String)],
     metaTags: [ArrayModel(String)]
 }) {
@@ -23,7 +25,8 @@ class Entry extends ObjectModel({
             tags: [],
             metaTags: [constants.TAG_DE_ID, constants.TAG_AUT_ID, constants.TAG_TYPE_LINK_ID],
             created: new Date().getTime(),
-            updated: new Date().getTime()
+            updated: new Date().getTime(),
+            updatedBy: localStorageService.getUser()
         };
         properties = properties || {};
         super(Object.assign(defaults, properties));
