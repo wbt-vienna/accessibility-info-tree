@@ -5,19 +5,30 @@
                 class="fas fa-plus"></i> Neuer Eintrag
         </router-link>
         <h3>Filter</h3>
-        <div>
-            <label for="inputChkOr" style="padding: 0">Verknüpfungsmodus</label>
-            <select id="inputChkOr" v-model="joinMode" @change="filterChanged()">
-                <option value="OR">ODER</option>
-                <option value="AND">UND</option>
-            </select>
+        <div class="row" v-if="tags">
+            <input class="col-md-12" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
         </div>
         <div v-if="tags">
             <tag-selector :start-tag-id="constants.TAG_ACCESSIBILITY_ID" :tags="tags" v-model="searchTags"
                           @change="filterChanged()"></tag-selector>
         </div>
         <div class="row" v-if="tags">
-            <input class="col-md-4" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-top: 1em" v-focus/>
+            <accordion acc-label="Erweiterte Sucheinstellugen" class="col-md-12" style="margin-top: 1em">
+                <div>
+                    <label for="inputChkOr" style="padding: 0">Verknüpfungsmodus</label>
+                    <select id="inputChkOr" v-model="filterOptions.joinMode" @change="filterChanged()">
+                        <option value="OR">ODER</option>
+                        <option value="AND">UND</option>
+                    </select>
+                </div>
+                <div v-if="canEdit">
+                    <label for="inputCreatedBy" style="padding: 0">Zuletzt aktualisiert von</label>
+                    <select id="inputCreatedBy" v-model="filterOptions.updatedBy" @change="filterChanged()">
+                        <option value="">alle</option>
+                        <option v-for="user in updatedByList" :value="user">{{user}}</option>
+                    </select>
+                </div>
+            </accordion>
         </div>
         <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
         <span>({{filteredEntries.length}} Ergebnisse)</span>
@@ -54,22 +65,27 @@
     import TagSelector from "./tagSelector.vue"
     import {Entry} from "../js/model/Entry";
     import {util} from "../js/util/util";
+    import Accordion from "./accordion.vue";
 
     let thiz = null;
     export default {
-        components: {TagSelector},
+        components: {Accordion, TagSelector},
         data() {
             return {
                 tags: null,
                 entries: null,
                 filteredEntries: [],
+                filterOptions: {
+                    joinMode: 'OR',
+                    updatedBy: ""
+                },
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchTags: [],
                 searchText: this.$route.params.searchtext || "",
-                joinMode: "OR",
                 tagUtil: tagUtil,
                 constants: constants,
-                loading: true
+                loading: true,
+                updatedByList: []
             }
         },
         methods: {
@@ -86,6 +102,12 @@
 
                     return dataService.getEntries().then(entries => {
                         thiz.entries = JSON.parse(JSON.stringify(entries));
+                        thiz.updatedByList = thiz.entries.reduce((total, current) => {
+                            if (current.updatedBy && total.indexOf(current.updatedBy) === -1) {
+                                total.push(current.updatedBy);
+                            }
+                            return total;
+                        }, []);
 
                         let printSQL = false;
                         if (printSQL) {
@@ -158,6 +180,9 @@
                     thiz.loading = true;
                     thiz.filteredEntries = thiz.entries;
                     history.pushState(null, null, '#/entries/');
+                    if (thiz.filterOptions.updatedBy) {
+                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => entry.updatedBy === thiz.filterOptions.updatedBy);
+                    }
                     if (thiz.searchText) {
                         history.pushState(null, null, '#/entries/search/' + thiz.searchText);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
@@ -179,7 +204,7 @@
                         }, thiz.searchTags);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
                             let allEntryTags = entry.tags.concat(entry.metaTags);
-                            if (thiz.joinMode === 'OR') {
+                            if (thiz.filterOptions.joinMode === 'OR') {
                                 return totalSearchTags.reduce((total, currentId) => {
                                     return total || allEntryTags.indexOf(currentId) !== -1;
                                 }, false);
