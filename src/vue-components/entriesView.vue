@@ -31,11 +31,11 @@
             </accordion>
         </div>
         <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
-        <span>({{filteredEntries.length}} Ergebnisse)</span>
+        <span v-if="filteredEntries">({{filteredEntries.length}} Ergebnisse)</span>
         <div>
             <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
             <ul v-if="!loading">
-                <li v-for="entry in filteredEntries">
+                <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)">
                     <router-link v-if="canEdit" class="button actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
                     <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
                             class="fas fa-trash-alt"/></button>
@@ -51,6 +51,7 @@
                     </div>
                 </li>
             </ul>
+            <a href="javascript:;" @click="filterOptions.limitResults+=50" v-if="filteredEntries.length > filterOptions.limitResults">weitere 50 Einträge anzeigen</a>
             <span v-if="!loading && filteredEntries.length === 0">keine Einträge.</span>
         </div>
     </div>
@@ -77,7 +78,8 @@
                 filteredEntries: [],
                 filterOptions: {
                     joinMode: 'OR',
-                    updatedBy: ""
+                    updatedBy: "",
+                    limitResults: 50
                 },
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchTags: [],
@@ -178,6 +180,7 @@
                 }
                 util.debounce(() => {
                     thiz.loading = true;
+                    thiz.filterOptions.limitResults = 50;
                     thiz.filteredEntries = thiz.entries;
                     history.pushState(null, null, '#/entries/');
                     if (thiz.filterOptions.updatedBy) {
