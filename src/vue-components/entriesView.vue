@@ -15,18 +15,22 @@
         <div class="row" v-if="tags">
             <accordion acc-label="Erweiterte Sucheinstellugen" class="col-md-12" style="margin-top: 1em">
                 <div>
-                    <label for="inputChkOr" style="padding: 0">Verknüpfungsmodus</label>
+                    <label for="inputChkOr">Verknüpfungsmodus</label>
                     <select id="inputChkOr" v-model="filterOptions.joinMode" @change="filterChanged()">
                         <option value="OR">ODER</option>
                         <option value="AND">UND</option>
                     </select>
                 </div>
                 <div v-if="canEdit">
-                    <label for="inputCreatedBy" style="padding: 0">Zuletzt aktualisiert von</label>
+                    <label for="inputCreatedBy">Zuletzt aktualisiert von</label>
                     <select id="inputCreatedBy" v-model="filterOptions.updatedBy" @change="filterChanged()">
                         <option value="">alle</option>
                         <option v-for="user in updatedByList" :value="user">{{user}}</option>
                     </select>
+                </div>
+                <div v-if="canEdit">
+                    <input id="possibleDuplicates" type="checkbox" v-model="filterOptions.onlyPossibleDuplicates" @change="filterChanged()">
+                    <label for="possibleDuplicates">Nur potentielle Duplikate anzeigen</label>
                 </div>
             </accordion>
         </div>
@@ -35,12 +39,12 @@
         <div>
             <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
             <ul v-if="!loading">
-                <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)">
+                <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)" :style="'background-color:' + entry.color">
                     <router-link v-if="canEdit" class="button actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
                     <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
                             class="fas fa-trash-alt"/></button>
 
-                    <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header)"></a>
+                    <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
                     <div v-if="entry.tags.length > 0 || entry.metaTags.length > 0">
@@ -51,7 +55,7 @@
                     </div>
                 </li>
             </ul>
-            <a href="javascript:;" @click="filterOptions.limitResults+=50" v-if="filteredEntries.length > filterOptions.limitResults">weitere 50 Einträge anzeigen</a>
+            <a href="javascript:;" @click="filterOptions.limitResults+=50" v-if="filteredEntries.length > filterOptions.limitResults && !loading">weitere 50 Einträge anzeigen</a>
             <span v-if="!loading && filteredEntries.length === 0">keine Einträge.</span>
         </div>
     </div>
@@ -67,6 +71,7 @@
     import {Entry} from "../js/model/Entry";
     import {util} from "../js/util/util";
     import Accordion from "./accordion.vue";
+    import {entryUtil} from "../js/util/entryUtil";
 
     let thiz = null;
     export default {
@@ -174,14 +179,25 @@
                 });
                 return text;
             },
+            getLinkForHeader(entry) {
+                if (!thiz.filterOptions.onlyPossibleDuplicates) {
+                    return '';
+                }
+                return `<span style="font-size: 0.6em"> (${entry.link})</span>`
+            },
             filterChanged(debounceTime) {
                 if (!thiz.entries) {
                     return;
                 }
+                thiz.loading = true;
                 util.debounce(() => {
-                    thiz.loading = true;
                     thiz.filterOptions.limitResults = 50;
                     thiz.filteredEntries = thiz.entries;
+                    if (thiz.filterOptions.onlyPossibleDuplicates) {
+                        thiz.filteredEntries = entryUtil.getPossibleDuplicates(thiz.entries);
+                        thiz.loading = false;
+                        return;
+                    }
                     history.pushState(null, null, '#/entries/');
                     if (thiz.filterOptions.updatedBy) {
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => entry.updatedBy === thiz.filterOptions.updatedBy);
