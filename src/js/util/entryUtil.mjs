@@ -16,12 +16,24 @@ entryUtil.getSimilar = function (checkEntry, entries, maxCount, threshold) {
     entries = entries.filter(entry => entry.id !== checkEntry.id);
     let similarEntries = [];
     let ratios = [];
+    let matcher = new difflib.SequenceMatcher();
+    let currentHeader = checkEntry.header;
     entries.forEach(entry => {
-        if (entry.link && checkEntry.link) {
+        let selected = false;
+        let validHeader = entry.header && currentHeader && currentHeader.length > 2;
+        if (validHeader && entry.header.toLocaleLowerCase().indexOf(checkEntry.header.toLowerCase()) !== -1) {
+            selected = true;
+            ratios.push({
+                entry: entry,
+                ratio: 1.1
+            });
+        }
+        if (!selected && entry.link && checkEntry.link) {
             try {
                 let hostnameExisting = new URL(entry.link).hostname;
                 let hostnameNew = new URL(checkEntry.link).hostname;
                 if (hostnameExisting === hostnameNew) {
+                    selected = true;
                     ratios.push({
                         entry: entry,
                         ratio: 1
@@ -30,24 +42,13 @@ entryUtil.getSimilar = function (checkEntry, entries, maxCount, threshold) {
             } catch (e) {
             }
         }
-    });
-    let matcher = new difflib.SequenceMatcher();
-    let currentHeader = checkEntry.header;
-    entries.forEach(entry => {
-        if (entry.header && currentHeader && currentHeader.length > 2) {
-            if(entry.header.toLocaleLowerCase().indexOf(checkEntry.header.toLowerCase()) !== -1) {
-                ratios.push({
-                    entry: entry,
-                    ratio: 1
-                });
-            } else if(threshold > 0 && threshold !== 1) {
-                matcher.set_seqs(entry.header, checkEntry.header);
-                let ratio = matcher.ratio();
-                ratios.push({
-                    entry: entry,
-                    ratio: ratio
-                });
-            }
+        if (!selected && validHeader && threshold > 0 && threshold !== 1) {
+            matcher.set_seqs(entry.header, checkEntry.header);
+            let ratio = matcher.ratio();
+            ratios.push({
+                entry: entry,
+                ratio: ratio
+            });
         }
     });
     ratios = ratios.filter(ratio => ratio.ratio >= threshold);
@@ -63,9 +64,10 @@ entryUtil.getPossibleDuplicates = function (entries, threshold) {
     threshold = threshold || 1;
     entries = JSON.parse(JSON.stringify(entries));
     let possibleDuplicates = [];
+    let duplicateIds = [];
     let color = 'lightgray';
     entries.forEach(entry => {
-        if (possibleDuplicates.indexOf(entry) === -1) {
+        if (duplicateIds.indexOf(entry.id) === -1) {
             let duplicates = entryUtil.getSimilar(entry, entries, 5, threshold);
             if (duplicates.length > 0) {
                 color = color === 'lightgray' ? 'lightblue' : 'lightgray';
@@ -73,7 +75,7 @@ entryUtil.getPossibleDuplicates = function (entries, threshold) {
                 setColor(duplicates, color);
                 possibleDuplicates.push(entry);
                 possibleDuplicates = possibleDuplicates.concat(duplicates);
-                let duplicateIds = duplicates.map(d => d.id);
+                duplicateIds = possibleDuplicates.map(d => d.id);
                 entries = entries.filter(e => duplicateIds.indexOf(e.id) === -1 && e.id !== entry.id);
             }
         }
