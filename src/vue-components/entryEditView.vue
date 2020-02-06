@@ -3,11 +3,12 @@
         <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
         <div class="row">
             <label class="col-md-3" for="inputHeader">Überschrift*</label>
-            <input type="text" class="col-md-8" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
+            <input type="text" class="col-md-6" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="linkInput">Link</label>
-            <input type="text" class="col-md-8" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
+            <input type="text" class="col-md-6" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
+            <span class="col-md-2" v-if="editEntry.link && editEntry.link.indexOf('http') !== 0" style="display:flex; align-items: center; color: red">muss mit http oder https beginnen!</span>
         </div>
         <div class="row" v-if="isNew && existingSimilar.length > 0">
             <label class="col-md-3" for="existingEntries" style="font-weight: normal; font-style: italic">Bereits existierende Einträge</label>
@@ -17,7 +18,7 @@
         </div>
         <div class="row">
             <label class="col-md-3" for="shortInput">Kurzbeschreibung</label>
-            <textarea class="col-md-8" id="shortInput" v-model="editEntry.short" maxlength="500"/>
+            <textarea class="col-md-6" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
         <div class="row">
             <label class="col-md-3" for="inputTags" style="align-items: initial;">Tags</label>
@@ -76,7 +77,7 @@
         },
         computed: {
             valid: function () {
-                return thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy;
+                return thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy && (!thiz.editEntry.link || thiz.editEntry.link.indexOf('http') === 0);
             }
         },
         methods: {
