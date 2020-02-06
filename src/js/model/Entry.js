@@ -14,8 +14,7 @@ class Entry extends ObjectModel({
     created: [Number],
     updated: [Number],
     updatedBy: [String],
-    tags: [ArrayModel(String)],
-    metaTags: [ArrayModel(String)]
+    tags: [ArrayModel(String)]
 }) {
     constructor(properties) {
         let defaults = {
@@ -23,7 +22,6 @@ class Entry extends ObjectModel({
             modelName: Entry.getModelName(),
             types: [],
             tags: [],
-            metaTags: [constants.TAG_DE_ID, constants.TAG_AUT_ID, constants.TAG_TYPE_LINK_ID],
             created: new Date().getTime(),
             updated: new Date().getTime(),
             updatedBy: localStorageService.getUser()

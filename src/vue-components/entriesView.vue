@@ -47,12 +47,8 @@
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
-                    <div v-if="entry.tags.length > 0 || entry.metaTags.length > 0">
-                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
-                        </button>
-                        <button class="tagButton" v-for="tagId in entry.metaTags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
-                        </button>
-                    </div>
+                    <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
+                    </button>
                 </li>
             </ul>
             <a href="javascript:;" @click="filterOptions.limitResults+=50" v-if="filteredEntries.length > filterOptions.limitResults && !loading">weitere 50 Einträge anzeigen</a>
@@ -208,8 +204,7 @@
                             let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1 : false;
-                            let allTags = entry.tags.concat(entry.metaTags);
-                            let inTags = allTags.reduce((total, currentTagId) => {
+                            let inTags = entry.tags.reduce((total, currentTagId) => {
                                 let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
                                 return total || tagLabel.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
                             }, false);
@@ -222,16 +217,15 @@
                             return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
                         }, thiz.searchTags);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
-                            let allEntryTags = entry.tags.concat(entry.metaTags);
                             if (thiz.filterOptions.joinMode === 'OR') {
                                 return totalSearchTags.reduce((total, currentId) => {
-                                    return total || allEntryTags.indexOf(currentId) !== -1;
+                                    return total || entry.tags.indexOf(currentId) !== -1;
                                 }, false);
                             } else {
                                 return thiz.searchTags.reduce((total, currentId) => {
                                     let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
                                     let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
-                                        return totalAny || allEntryTags.indexOf(possibleTag) !== -1;
+                                        return totalAny || entry.tags.indexOf(possibleTag) !== -1;
                                     }, false);
                                     return total && hasAny;
                                 }, true);
