@@ -10,10 +10,16 @@
             <input type="text" class="col-md-6" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
             <span class="col-md-2" v-if="editEntry.link && editEntry.link.indexOf('http') !== 0" style="display:flex; align-items: center; color: red">muss mit http oder https beginnen!</span>
         </div>
-        <div class="row" v-if="isNew && existingSimilar.length > 0">
+        <div class="row" v-if="existingSimilar.length > 0">
             <label class="col-md-3" for="existingEntries" style="font-weight: normal; font-style: italic">Bereits existierende Einträge</label>
-            <ul id="existingEntries" style="list-style-type: none; padding-left: 0">
-                <li v-for="entry in existingSimilar"><a :href="entry.link" target="_blank">{{entry.header}}</a></li>
+            <ul id="existingEntries" style="list-style-type: none; padding-left: 0" class="col-md-8">
+                <li v-for="entry in existingSimilar">
+                    <a :href="entry.link" target="_blank">{{entry.header}}</a>
+                    <button class="tagButton" v-for="tagId in entry.tags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
+                    </button>
+                    <button class="tagButton" v-for="tagId in entry.metaTags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
+                    </button>
+                </li>
             </ul>
         </div>
         <div class="row">
@@ -95,6 +101,7 @@
                             thiz.editEntry = result ? JSON.parse(JSON.stringify(result)) : new Entry();
                             thiz.lastUpdatedBy = thiz.editEntry.updatedBy;
                             thiz.editEntry.updatedBy = localStorageService.getUser() || "";
+                            thiz.recomputeSimilar(0);
                         });
                         return Promise.resolve();
                     });
@@ -115,10 +122,10 @@
                     thiz.$router.go(-1);
                 });
             },
-            recomputeSimilar() {
+            recomputeSimilar(timeout) {
                 util.debounce(() => {
                     thiz.existingSimilar = entryUtil.getSimilar(thiz.editEntry, thiz.entries);
-                }, 500, "recompute");
+                }, timeout ? timeout : 500, "recompute");
             }
         },
         mounted() {
@@ -156,5 +163,11 @@
         display: flex;
         align-items: center;
         color: red;
+    }
+
+    .tagButton {
+        font-size: 0.6em;
+        padding: 0 2px 0 2px;
+        margin: 0 2px;
     }
 </style>
