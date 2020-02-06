@@ -21,7 +21,7 @@ class Entry extends ObjectModel({
             id: "",
             modelName: Entry.getModelName(),
             types: [],
-            tags: [],
+            tags: [constants.TAG_TYPE_LINK_ID],
             created: new Date().getTime(),
             updated: new Date().getTime(),
             updatedBy: localStorageService.getUser()
