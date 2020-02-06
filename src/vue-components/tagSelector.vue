@@ -3,8 +3,8 @@
         <div class="col-md-4">
             Gewählte Tags <a href="javascript:;" @click="removeAll">alle löschen</a>
             <div>
-                <button class="tagButton" @click="removeTag(tagId)" v-for="tagId in elementTags" :style="tagUtil.getColorStyle(tagId, tags)"><i class="fas fa-times"></i> {{tagUtil.getLabel(tagId, tags)}}</button>
-                <span v-if="elementTags.length === 0">(keine)</span>
+                <button class="tagButton" @click="removeTag(tagId)" v-for="tagId in relevantTags" :style="tagUtil.getColorStyle(tagId, tags)"><i class="fas fa-times"></i> {{tagUtil.getLabel(tagId, tags)}}</button>
+                <span v-if="relevantTags.length === 0">(keine)</span>
             </div>
         </div>
         <div class="col-md-8">
@@ -35,21 +35,34 @@
             tags: {
                 handler(val){
                     this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagIds, val, 1);
+                    this.allChildren = tagUtil.getAllChildIds(this.startTagIds, val);
                 },
                 deep: true
             },
+        },
+        computed: {
+            relevantTags: function () {
+                return this.elementTags.filter(tag => this.allChildren.indexOf(tag) !== -1);
+            },
+            isValid: function () {
+                return this.relevantTags.length > 0;
+            }
         },
         data() {
             return {
                 elementTags: this.value,
                 startTags: null,
                 selectTags: null,
+                allChildren: [],
                 tagUtil: tagUtil
             }
         },
         methods: {
-            addTag(tagId) {
-                let parentIds = tagUtil.getAllParentIds(tagId, this.tags, 1);
+            addTag(tagId, fromExternal) {
+                if (this.allChildren.indexOf(tagId) === -1) {
+                    return;
+                }
+                let parentIds = tagUtil.getAllParentIds(tagId, this.tags);
                 let childIds = tagUtil.getAllChildIds(tagId, this.tags);
                 let hasAlreadyChild = childIds.reduce((total, currentId) => {
                     return total || this.elementTags.indexOf(currentId) !== -1;
@@ -59,7 +72,7 @@
                 }
                 this.elementTags = this.elementTags.filter(existingId => parentIds.indexOf(existingId) === -1);
                 this.selectTags = tagUtil.getAllChildren(tagId, this.tags, 1);
-                if (this.selectTags.length === 0) {
+                if (fromExternal || this.selectTags.length === 0) {
                     this.selectTags = this.startTags;
                 }
                 this.elementTags = [...new Set(this.elementTags)];
@@ -85,6 +98,7 @@
         },
         mounted() {
             this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagIds, this.tags, 1);
+            this.allChildren = tagUtil.getAllChildIds(this.startTagIds, this.tags);
             this.elementTags.sort();
         }
     }
@@ -94,5 +108,10 @@
     .tagButton {
         padding: 0 5px 0 5px;
         margin: 2px;
+    }
+
+    .row {
+        margin-top: 0 !important;
+        margin-bottom: 0.5em;
     }
 </style>

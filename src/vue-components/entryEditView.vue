@@ -15,9 +15,7 @@
             <ul id="existingEntries" style="list-style-type: none; padding-left: 0" class="col-md-8">
                 <li v-for="entry in existingSimilar">
                     <a :href="entry.link" target="_blank">{{entry.header}}</a>
-                    <button class="tagButton" v-for="tagId in entry.tags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
-                    </button>
-                    <button class="tagButton" v-for="tagId in entry.metaTags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
+                    <button class="tagButton" @click="addTag(tagId)" v-for="tagId in entry.tags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
                     </button>
                 </li>
             </ul>
@@ -26,19 +24,13 @@
             <label class="col-md-3" for="shortInput">Kurzbeschreibung</label>
             <textarea class="col-md-6" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="inputTags" style="align-items: initial;">Tags</label>
+        <div class="row" v-for="(startTag, index) in constants.TAGS_MANDATORY">
+            <label class="col-md-3" for="inputTags" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
             <div class="col-md-8" id="inputTags">
-                <tag-selector :start-tag-ids="constants.TAG_ACCESSIBILITY_ID" :tags="tags" v-model="editEntry.tags"></tag-selector>
+                <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
             </div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="inputMetaTags" style="align-items: initial;">Meta-Tags</label>
-            <div class="col-md-8" id="inputMetaTags">
-                <tag-selector :start-tag-ids="constants.TAG_META_ID" :tags="tags" v-model="editEntry.metaTags"></tag-selector>
-            </div>
-        </div>
-        <div class="row">
+        <div class="row" style="margin-top: 1.5em">
             <label class="col-md-3" for="updatedBy">{{isNew ? 'Erstellt von*' : 'Aktualisiert von*'}}</label>
             <input type="text" class="col-md-3" id="updatedBy" v-model="editEntry.updatedBy" autocomplete="off" maxlength="15" placeholder="z.B. Vorname / Namenskürzel"/>
             <span class="col-md-3" v-if="lastUpdatedBy && lastUpdatedBy !== editEntry.updatedBy">(zuvor: {{lastUpdatedBy}})</span>
@@ -76,6 +68,7 @@
                 editEntry: null,
                 lastUpdatedBy: "",
                 isNew: false,
+                recomputeProperty: 0,
                 existingSimilar: [],
                 tagUtil: tagUtil,
                 constants: constants
@@ -83,7 +76,18 @@
         },
         computed: {
             valid: function () {
-                return thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy && (!thiz.editEntry.link || thiz.editEntry.link.indexOf('http') === 0);
+                let validTagSelectors = true;
+                thiz.recomputeProperty--;
+                constants.TAGS_MANDATORY.forEach((mandatoryTag, index) => {
+                    if (!thiz.$refs['tagSelector' + index] || !thiz.$refs['tagSelector' + index][0]) {
+                        setTimeout(() => {
+                            thiz.recomputeProperty++;
+                        }, 300);
+                        return;
+                    }
+                    validTagSelectors = validTagSelectors && thiz.$refs['tagSelector' + index][0].isValid;
+                });
+                return validTagSelectors && thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy && (!thiz.editEntry.link || thiz.editEntry.link.indexOf('http') === 0);
             }
         },
         methods: {
@@ -126,6 +130,14 @@
                 util.debounce(() => {
                     thiz.existingSimilar = entryUtil.getSimilar(thiz.editEntry, thiz.entries);
                 }, timeout ? timeout : 500, "recompute");
+            },
+            addTag(tagId) {
+                constants.TAGS_MANDATORY.forEach((mandatoryTag, index) => {
+                    thiz.$refs['tagSelector' + index][0].addTag(tagId, true);
+                });
+            },
+            recompute() {
+                thiz.recomputeProperty++;
             }
         },
         mounted() {
