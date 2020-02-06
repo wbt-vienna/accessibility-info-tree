@@ -24,7 +24,12 @@ tagUtil.getTagFromLabel = function(label, tags) {
 };
 
 tagUtil.getAllChildren = function (tagIdOrTag, tags, maxDepth) {
-    return getAll(tagIdOrTag, tags, true, maxDepth);
+    let result = [];
+    tagIdOrTag = tagIdOrTag instanceof Array ? tagIdOrTag : [tagIdOrTag];
+    tagIdOrTag.forEach(tagId => {
+        result = result.concat(getAll(tagId, tags, true, maxDepth))
+    });
+    return result;
 };
 
 tagUtil.getAllParents = function (tagIdOrTag, tags, maxDepth) {
