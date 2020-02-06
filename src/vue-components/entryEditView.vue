@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="row" style="margin-top: 1.5em">
-            <label class="col-md-3" for="updatedBy">{{isNew ? 'Erstellt von*' : 'Aktualisiert von*'}}</label>
+            <label class="col-md-3" for="updatedBy">{{'Erstellt von*'}}</label>
             <input type="text" class="col-md-3" id="updatedBy" v-model="editEntry.updatedBy" autocomplete="off" maxlength="15" placeholder="z.B. Vorname / Namenskürzel"/>
             <span class="col-md-3" v-if="lastUpdatedBy && lastUpdatedBy !== editEntry.updatedBy">(zuvor: {{lastUpdatedBy}})</span>
         </div>
@@ -104,7 +104,9 @@
                             thiz.isNew = !result;
                             thiz.editEntry = result ? JSON.parse(JSON.stringify(result)) : new Entry();
                             thiz.lastUpdatedBy = thiz.editEntry.updatedBy;
-                            thiz.editEntry.updatedBy = localStorageService.getUser() || "";
+                            if (!thiz.editEntry.updatedBy) {
+                                thiz.editEntry.updatedBy = localStorageService.getUser() || "";
+                            }
                             thiz.recomputeSimilar(0);
                         });
                         return Promise.resolve();

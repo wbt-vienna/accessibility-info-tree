@@ -22,7 +22,7 @@
                     </select>
                 </div>
                 <div v-if="canEdit">
-                    <label for="inputCreatedBy">Zuletzt aktualisiert von</label>
+                    <label for="inputCreatedBy">Erstellt von</label>
                     <select id="inputCreatedBy" v-model="filterOptions.updatedBy" @change="filterChanged()">
                         <option value="">alle</option>
                         <option v-for="user in updatedByList" :value="user">{{user}}</option>
