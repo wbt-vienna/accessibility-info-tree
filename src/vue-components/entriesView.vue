@@ -9,7 +9,7 @@
             <input class="col-md-12" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
         </div>
         <div v-if="tags">
-            <tag-selector :start-tag-id="constants.TAG_ACCESSIBILITY_ID" :tags="tags" v-model="searchTags"
+            <tag-selector :start-tag-ids="[constants.TAG_ACCESSIBILITY_ID, constants.TAG_META_ID]" :tags="tags" v-model="searchTags"
                           @change="filterChanged()"></tag-selector>
         </div>
         <div class="row" v-if="tags">

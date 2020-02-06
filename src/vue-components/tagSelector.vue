@@ -23,7 +23,7 @@
         props: {
             value: Array,
             tags: Array,
-            startTagId: String
+            startTagIds: Array | String
         },
         watch: {
             value: {
@@ -34,7 +34,7 @@
             },
             tags: {
                 handler(val){
-                    this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagId, val, 1);
+                    this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagIds, val, 1);
                 },
                 deep: true
             },
@@ -84,7 +84,7 @@
             }
         },
         mounted() {
-            this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagId, this.tags, 1);
+            this.startTags = this.selectTags = tagUtil.getAllChildren(this.startTagIds, this.tags, 1);
             this.elementTags.sort();
         }
     }
