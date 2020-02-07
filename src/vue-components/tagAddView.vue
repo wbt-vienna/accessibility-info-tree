@@ -45,9 +45,7 @@
             <label class="col-md-3" for="mandatory">Verpflichtend</label>
             <input type="checkbox" v-model="selectedTag.mandatory" id="mandatory" class="col-md-1" @change="selectedTag.mandatory ? (selectedTag.optional = !selectedTag.mandatory) : null"/>
             <span class="col-md-6">(Jeder Eintrag muss verpflichtend ein Kind dieses Tags zugewiesen werden)</span>
-        </div>Sample text for typing scenario
-        Sample text for typing scenario
-        Sample text for typing scenario
+        </div>
         <div class="row" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
             <label class="col-md-3" for="optional">Optional</label>
             <input type="checkbox" v-model="selectedTag.optional" id="optional" class="col-md-1" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
