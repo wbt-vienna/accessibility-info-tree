@@ -25,9 +25,15 @@
             <textarea class="col-md-6" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
         <div class="row" v-for="(startTag, index) in mandatoryTags">
-            <label class="col-md-3" for="inputTags" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
-            <div class="col-md-8" id="inputTags">
+            <label class="col-md-3" :for="'inputTags' + index" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
+            <div class="col-md-8" :id="'inputTags' + index">
                 <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :respect-assignable="true" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
+            </div>
+        </div>
+        <div class="row" v-show="optionalTags.length > 0">
+            <label class="col-md-3" for="optionalTags" style="align-items: initial;">Optionale Tags</label>
+            <div class="col-md-8" id="optionalTags">
+                <tag-selector :start-tag-ids="optionalTags" :tags="tags" v-model="editEntry.tags" :respect-assignable="true" ref="tagSelectorOptional" @change="recompute()"></tag-selector>
             </div>
         </div>
         <div class="row" style="margin-top: 1.5em">
@@ -65,6 +71,7 @@
             return {
                 tags: null,
                 mandatoryTags: [],
+                optionalTags: [],
                 entries: null,
                 editEntry: null,
                 lastUpdatedBy: "",
@@ -98,6 +105,7 @@
                     return dataService.getTags().then(result => {
                         let tags = JSON.parse(JSON.stringify(result)).tags;
                         thiz.mandatoryTags = tagUtil.getTagsWithProperty('mandatory', tags);
+                        thiz.optionalTags = tagUtil.getTagsWithProperty('optional', tags);
                         thiz.tags = tags;
                         dataService.getEntry(thiz.$route.params.editid).then(result => {
                             thiz.isNew = !result;
@@ -136,6 +144,7 @@
                 }, timeout ? timeout : 500, "recompute");
             },
             addTag(tagId) {
+                thiz.$refs['tagSelectorOptional'].addTag(tagId, true);
                 thiz.mandatoryTags.forEach((mandatoryTag, index) => {
                     thiz.$refs['tagSelector' + index][0].addTag(tagId, true);
                 });
