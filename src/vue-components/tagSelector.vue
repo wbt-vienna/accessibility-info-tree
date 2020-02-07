@@ -23,7 +23,8 @@
         props: {
             value: Array,
             tags: Array,
-            startTagIds: Array | String
+            startTagIds: Array | String,
+            respectAssignable: Boolean
         },
         watch: {
             value: {
@@ -67,7 +68,7 @@
                 let hasAlreadyChild = childIds.reduce((total, currentId) => {
                     return total || this.elementTags.indexOf(currentId) !== -1;
                 }, false);
-                if (!hasAlreadyChild) {
+                if (!hasAlreadyChild && (!this.respectAssignable || !tagUtil.getTag(tagId, this.tags).notAssignable)) {
                     this.elementTags.push(tagId);
                 }
                 this.elementTags = this.elementTags.filter(existingId => parentIds.indexOf(existingId) === -1);
@@ -81,14 +82,14 @@
             },
             removeTag(tagId) {
                 this.elementTags = this.elementTags.filter(existingId => tagId !== existingId);
-                if (this.elementTags.length === 0) {
+                if (this.relevantTags.length === 0) {
                     this.selectTags = this.startTags;
                 }
                 this.emitChange();
             },
             removeAll() {
                 this.selectTags = this.startTags;
-                this.elementTags = [];
+                this.elementTags = this.elementTags.filter(tagId => this.relevantTags.indexOf(tagId) === -1);
                 this.emitChange();
             },
             emitChange() {
