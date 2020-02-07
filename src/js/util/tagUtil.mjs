@@ -148,6 +148,16 @@ tagUtil.anyParentHasProperty = function (tagIdOrTag, tags, propertyNames) {
     }, false);
 };
 
+tagUtil.getTagsWithProperty = function (propertyName, tags) {
+    let result = [];
+    tags.forEach(tag => {
+        if (tag[propertyName]) {
+            result.push(tag);
+        }
+    });
+    return result;
+};
+
 function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
