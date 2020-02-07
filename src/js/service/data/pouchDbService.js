@@ -96,7 +96,11 @@ pouchDbService.save = function (modelName, data) {
 pouchDbService.remove = function (id) {
     return queryInternal(null, id).then(object => {
         log.debug('deleted object from db! id: ' + object.id);
-        return _pouchDb.remove(object);
+        let promise = _pouchDb.remove(object);
+        promise.then(result => {
+            _knownRevs.push(result.rev);
+        });
+        return promise;
     });
 };
 
