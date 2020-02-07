@@ -27,7 +27,7 @@
         <div class="row" v-for="(startTag, index) in mandatoryTags">
             <label class="col-md-3" for="inputTags" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
             <div class="col-md-8" id="inputTags">
-                <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
+                <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :respect-assignable="true" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
             </div>
         </div>
         <div class="row" style="margin-top: 1.5em">
