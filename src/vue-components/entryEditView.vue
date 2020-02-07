@@ -24,7 +24,7 @@
             <label class="col-md-3" for="shortInput">Kurzbeschreibung</label>
             <textarea class="col-md-6" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
-        <div class="row" v-for="(startTag, index) in constants.TAGS_MANDATORY">
+        <div class="row" v-for="(startTag, index) in mandatoryTags">
             <label class="col-md-3" for="inputTags" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
             <div class="col-md-8" id="inputTags">
                 <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
@@ -64,6 +64,7 @@
         data() {
             return {
                 tags: null,
+                mandatoryTags: [],
                 entries: null,
                 editEntry: null,
                 lastUpdatedBy: "",
@@ -78,11 +79,8 @@
             valid: function () {
                 let validTagSelectors = true;
                 thiz.recomputeProperty--;
-                constants.TAGS_MANDATORY.forEach((mandatoryTag, index) => {
+                thiz.mandatoryTags.forEach((mandatoryTag, index) => {
                     if (!thiz.$refs['tagSelector' + index] || !thiz.$refs['tagSelector' + index][0]) {
-                        setTimeout(() => {
-                            thiz.recomputeProperty++;
-                        }, 300);
                         return;
                     }
                     validTagSelectors = validTagSelectors && thiz.$refs['tagSelector' + index][0].isValid;
@@ -99,6 +97,7 @@
                     thiz.entries = entries;
                     return dataService.getTags().then(result => {
                         let tags = JSON.parse(JSON.stringify(result)).tags;
+                        thiz.mandatoryTags = tagUtil.getTagsWithProperty('mandatory', tags);
                         thiz.tags = tags;
                         dataService.getEntry(thiz.$route.params.editid).then(result => {
                             thiz.isNew = !result;
@@ -108,6 +107,9 @@
                                 thiz.editEntry.updatedBy = localStorageService.getUser() || "";
                             }
                             thiz.recomputeSimilar(0);
+                            thiz.$nextTick(() => {
+                                thiz.recompute();
+                            });
                         });
                         return Promise.resolve();
                     });
@@ -134,7 +136,7 @@
                 }, timeout ? timeout : 500, "recompute");
             },
             addTag(tagId) {
-                constants.TAGS_MANDATORY.forEach((mandatoryTag, index) => {
+                thiz.mandatoryTags.forEach((mandatoryTag, index) => {
                     thiz.$refs['tagSelector' + index][0].addTag(tagId, true);
                 });
             },

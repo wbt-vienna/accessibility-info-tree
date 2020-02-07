@@ -9,7 +9,7 @@
             <input class="col-md-12" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
         </div>
         <div v-if="tags">
-            <tag-selector :start-tag-ids="[constants.TAG_ACCESSIBILITY_ID, constants.TAG_META_ID]" :tags="tags" v-model="searchTags"
+            <tag-selector :start-tag-ids="searchBaseTags" :tags="tags" v-model="searchTags"
                           @change="filterChanged()"></tag-selector>
         </div>
         <div class="row" v-if="tags">
@@ -85,6 +85,7 @@
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchTags: [],
                 searchText: this.$route.params.searchtext || "",
+                searchBaseTags: [],
                 tagUtil: tagUtil,
                 constants: constants,
                 loading: true,
@@ -95,6 +96,7 @@
             init() {
                 return dataService.getTags().then(result => {
                     thiz.tags = JSON.parse(JSON.stringify(result)).tags;
+                    thiz.searchBaseTags = tagUtil.getTagsWithProperty('searchRoot', thiz.tags);
                     let tagParams = thiz.$route.params.searchtags ? thiz.$route.params.searchtags.split(';') : [];
                     tagParams.forEach(tagParam => {
                         let tag = tagUtil.getTag(tagParam, thiz.tags);
