@@ -137,6 +137,17 @@ tagUtil.getTagsDepth = function (tags, relativeTag) {
     return depths.length > 0 ? Math.max(...depths) : 0;
 };
 
+tagUtil.anyParentHasProperty = function (tagIdOrTag, tags, propertyNames) {
+    propertyNames = propertyNames instanceof Array ? propertyNames : [propertyNames];
+    let allParents = tagUtil.getAllParents(tagIdOrTag, tags);
+    return allParents.reduce((result, tag) => {
+        propertyNames.forEach(property => {
+            result = result || !!tag[property];
+        });
+        return result;
+    }, false);
+};
+
 function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
