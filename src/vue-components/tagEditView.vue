@@ -35,6 +35,26 @@
                 </div>
             </div>
         </div>
+        <div class="row" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, 'searchRoot')">
+            <label class="col-md-3" for="searchRoot">Root-Tag für Suche</label>
+            <input type="checkbox" v-model="selectedTag.searchRoot" id="searchRoot" class="col-md-1"/>
+            <span class="col-md-6">(Kinder dieses Tags werden als Basis für die Eintrags-Suche angeboten)</span>
+        </div>
+        <div class="row">
+            <label class="col-md-3" for="notAssignable">Nicht zuweisbar</label>
+            <input type="checkbox" v-model="selectedTag.notAssignable" id="notAssignable" class="col-md-1"/>
+            <span class="col-md-6">(Dieser Tag kann Einträgen nicht direkt zugeordnet werden, da er nur ein Sammelbegriff für mehrere Kinder-Tags ist)</span>
+        </div>
+        <div class="row" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, ['mandatory', 'optional'])">
+            <label class="col-md-3" for="mandatory">Verpflichtend</label>
+            <input type="checkbox" v-model="selectedTag.mandatory" id="mandatory" class="col-md-1" @change="selectedTag.mandatory ? (selectedTag.optional = !selectedTag.mandatory) : null"/>
+            <span class="col-md-6">(Jeder Eintrag muss verpflichtend ein Kind dieses Tags zugewiesen werden)</span>
+        </div>
+        <div class="row" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, ['mandatory', 'optional'])">
+            <label class="col-md-3" for="optional">Optional</label>
+            <input type="checkbox" v-model="selectedTag.optional" id="optional" class="col-md-1" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
+            <span class="col-md-6">(Dieser Tag wird in unter den optionalen zuweisbaren Tags angezeigt)</span>
+        </div>
         <div class="row" style="margin-top: 2em">
             <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
@@ -94,15 +114,24 @@
                 if (!thiz.selectedTag.label.de) {
                     return Promise.resolve();
                 }
-                return dataService.saveTags(new Tags({tags: thiz.tags})).then(() => {
+                return thiz.saveInternal().then(() => {
                     thiz.originalTagsJSON = JSON.stringify(thiz.tags);
                     return Promise.resolve();
                 });
             },
             saveAndReturn() {
-                dataService.saveTags(new Tags({tags: thiz.tags})).then(() => {
+                thiz.saveInternal().then(() => {
                     thiz.$router.go(-1)
                 });
+            },
+            saveInternal() {
+                let allChildren = tagUtil.getAllChildren(thiz.selectedTag, thiz.tags);
+                allChildren.forEach(child => {
+                    child.searchRoot = thiz.selectedTag.searchRoot ? false : child.searchRoot;
+                    child.mandatory = thiz.selectedTag.mandatory ? false : child.mandatory;
+                    child.optional = thiz.selectedTag.optional ? false : child.optional;
+                });
+                return dataService.saveTags(new Tags({tags: thiz.tags}));
             },
             updateHandler(event, changedDoc) {
                 if (changedDoc.id === constants.TAGS_DOCUMENT_ID) {
