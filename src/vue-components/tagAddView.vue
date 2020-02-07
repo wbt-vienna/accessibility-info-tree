@@ -51,7 +51,7 @@
         <div class="row" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
             <label class="col-md-3" for="optional">Optional</label>
             <input type="checkbox" v-model="selectedTag.optional" id="optional" class="col-md-1" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
-            <span class="col-md-6">(Dieser Tag wird in unter den optionalen zuweisbaren Tags angezeigt)</span>
+            <span class="col-md-6">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
         </div>
         <div class="row" style="margin-top: 2em">
             <button class="col-md-6 col-md-offset-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
