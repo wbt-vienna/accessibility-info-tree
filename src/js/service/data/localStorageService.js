@@ -1,7 +1,9 @@
 let localStorageService = {};
 let KEY_USERNAME = 'AIT_KEY_ENTRY_USERNAME';
 let KEY_PASSWORD = 'AIT_KEY_PASSWORD';
+let KEY_FILTEROPTIONS = 'AIT_KEY_FILTEROPTIONS';
 let storage = null;
+let _tempStorage = {};
 
 if (typeof (Storage) !== "undefined") {
     try {
@@ -65,6 +67,14 @@ localStorageService.savePassword = function (password) {
 
 localStorageService.getPassword = function () {
     return localStorageService.get(KEY_PASSWORD);
+};
+
+localStorageService.saveFilterOptions = function (options) {
+    return _tempStorage[KEY_FILTEROPTIONS] = JSON.stringify(options);
+};
+
+localStorageService.getFilterOptions = function () {
+    return JSON.parse(_tempStorage[KEY_FILTEROPTIONS] || null);
 };
 
 

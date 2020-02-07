@@ -6,10 +6,10 @@
         </router-link>
         <h3>Filter</h3>
         <div class="row" v-if="tags">
-            <input class="col-md-12" type="text" v-model="searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
+            <input class="col-md-12" type="text" v-model="filterOptions.searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
         </div>
         <div v-if="tags">
-            <tag-selector :start-tag-ids="searchBaseTags" :tags="tags" v-model="searchTags"
+            <tag-selector :start-tag-ids="searchBaseTags" :tags="tags" v-model="filterOptions.searchTags"
                           @change="filterChanged()"></tag-selector>
         </div>
         <div class="row" v-if="tags">
@@ -47,8 +47,10 @@
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
-                    <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
-                    </button>
+                    <div>
+                        <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
+                        </button>
+                    </div>
                 </li>
             </ul>
             <a href="javascript:;" @click="filterOptions.limitResults+=50" v-if="filteredEntries.length > filterOptions.limitResults && !loading">weitere 50 Einträge anzeigen</a>
@@ -68,6 +70,7 @@
     import {util} from "../js/util/util";
     import Accordion from "./accordion.vue";
     import {entryUtil} from "../js/util/entryUtil";
+    import {localStorageService} from "../js/service/data/localStorageService";
 
     let thiz = null;
     export default {
@@ -80,11 +83,11 @@
                 filterOptions: {
                     joinMode: 'OR',
                     updatedBy: "",
-                    limitResults: 50
+                    limitResults: 50,
+                    searchText: this.$route.params.searchtext || "",
+                    searchTags: []
                 },
                 canEdit: databaseService.isLoggedInReadWrite(),
-                searchTags: [],
-                searchText: this.$route.params.searchtext || "",
                 searchBaseTags: [],
                 tagUtil: tagUtil,
                 constants: constants,
@@ -92,18 +95,31 @@
                 updatedByList: []
             }
         },
+        watch: {
+            filterOptions: {
+                handler(val) {
+                    localStorageService.saveFilterOptions(val);
+                },
+                deep: true
+            },
+        },
         methods: {
             init() {
                 return dataService.getTags().then(result => {
                     thiz.tags = JSON.parse(JSON.stringify(result)).tags;
                     thiz.searchBaseTags = tagUtil.getTagsWithProperty('searchRoot', thiz.tags);
-                    let tagParams = thiz.$route.params.searchtags ? thiz.$route.params.searchtags.split(';') : [];
-                    tagParams.forEach(tagParam => {
-                        let tag = tagUtil.getTag(tagParam, thiz.tags);
-                        if (tag) {
-                            thiz.searchTags.push(tag.id);
-                        }
-                    });
+                    let savedFilterOptions = localStorageService.getFilterOptions();
+                    if (savedFilterOptions) {
+                        thiz.filterOptions = savedFilterOptions;
+                    } else {
+                        let tagParams = thiz.$route.params.searchtags ? thiz.$route.params.searchtags.split(';') : [];
+                        tagParams.forEach(tagParam => {
+                            let tag = tagUtil.getTag(tagParam, thiz.tags);
+                            if (tag) {
+                                thiz.filterOptions.searchTags.push(tag.id);
+                            }
+                        });
+                    }
 
                     return dataService.getEntries().then(entries => {
                         thiz.entries = JSON.parse(JSON.stringify(entries));
@@ -154,8 +170,8 @@
                 }
             },
             addTag(id) {
-                thiz.searchTags.push(id);
-                thiz.searchTags = [...new Set(thiz.searchTags)];
+                thiz.filterOptions.searchTags.push(id);
+                thiz.filterOptions.searchTags = [...new Set(thiz.filterOptions.searchTags)];
                 thiz.filterChanged();
             },
             remove(entry) {
@@ -168,10 +184,10 @@
                 thiz.filterChanged();
             },
             highlightInHTML(text) {
-                if (thiz.searchText.length < 3) {
+                if (thiz.filterOptions.searchText.length < 3) {
                     return text;
                 }
-                let matches = [...text.matchAll(new RegExp(thiz.searchText, 'gi'))];
+                let matches = [...text.matchAll(new RegExp(thiz.filterOptions.searchText, 'gi'))];
                 matches.forEach(match => {
                     text = text.replace(match[0], `<b>${match[0]}</b>`);
                 });
@@ -200,31 +216,31 @@
                     if (thiz.filterOptions.updatedBy) {
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => entry.updatedBy === thiz.filterOptions.updatedBy);
                     }
-                    if (thiz.searchText) {
-                        history.pushState(null, null, '#/entries/search/' + thiz.searchText);
+                    if (thiz.filterOptions.searchText) {
+                        history.pushState(null, null, '#/entries/search/' + thiz.filterOptions.searchText);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
-                            let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
-                            let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
-                            let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1 : false;
+                            let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
+                            let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
+                            let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1 : false;
                             let inTags = entry.tags.reduce((total, currentTagId) => {
                                 let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
-                                return total || tagLabel.toLocaleLowerCase().indexOf(thiz.searchText.toLocaleLowerCase()) !== -1;
+                                return total || tagLabel.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
                             }, false);
                             return inHeader || inTags || inLink || inShort;
                         });
                     }
-                    if (thiz.searchTags.length > 0) {
-                        history.pushState(null, null, '#/entries/search/tag/' + thiz.searchTags.reduce((total, current) => total + current + ';', ''));
-                        let totalSearchTags = thiz.searchTags.reduce((total, currentId) => {
+                    if (thiz.filterOptions.searchTags.length > 0) {
+                        history.pushState(null, null, '#/entries/search/tag/' + thiz.filterOptions.searchTags.reduce((total, current) => total + current + ';', ''));
+                        let totalSearchTags = thiz.filterOptions.searchTags.reduce((total, currentId) => {
                             return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
-                        }, thiz.searchTags);
+                        }, thiz.filterOptions.searchTags);
                         thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
                             if (thiz.filterOptions.joinMode === 'OR') {
                                 return totalSearchTags.reduce((total, currentId) => {
                                     return total || entry.tags.indexOf(currentId) !== -1;
                                 }, false);
                             } else {
-                                return thiz.searchTags.reduce((total, currentId) => {
+                                return thiz.filterOptions.searchTags.reduce((total, currentId) => {
                                     let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
                                     let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
                                         return totalAny || entry.tags.indexOf(possibleTag) !== -1;
