@@ -4,6 +4,10 @@
         <input id="passwordField" type="password" v-model="password"/>
         <button @click="login">Login</button>
         <span v-if="wrongPassword">Falsches Passwort!</span>
+        <div>
+            <input id="inSavePassword" type="checkbox" v-model="savePassword"/>
+            <label for="inSavePassword">Passwort speichern und in Zukunft automatisch einloggen</label>
+        </div>
     </div>
 </template>
 
@@ -18,13 +22,14 @@
         data() {
             return {
                 password: '',
-                wrongPassword: false
+                wrongPassword: false,
+                savePassword: false
             }
         },
         methods: {
             login() {
                 thiz.wrongPassword = false;
-                databaseService.loginReadWrite(this.password).then(() => {
+                databaseService.loginReadWrite(this.password, this.savePassword).then(() => {
                     thiz.$router.push(fromRoute);
                 }).catch(() => {
                     thiz.wrongPassword = true;

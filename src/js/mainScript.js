@@ -10,6 +10,7 @@ import EntriesView from '../vue-components/entriesView.vue'
 import * as log from 'loglevel';
 import {databaseService} from "./service/data/databaseService";
 import 'mini.css';
+import {localStorageService} from "./service/data/localStorageService";
 
 function init() {
     window.log = log;
@@ -33,7 +34,14 @@ function init() {
     });
     router.beforeEach((to, from, next) => {
         if (!databaseService.isLoggedIn()) {
-            databaseService.loginReadonly().then(() => {
+            let password = localStorageService.getPassword();
+            let promise = null;
+            if (password) {
+                promise = databaseService.loginReadWrite(password, true);
+            } else {
+                promise = databaseService.loginReadonly();
+            }
+            promise.then(() => {
                 next();
             });
         } else {

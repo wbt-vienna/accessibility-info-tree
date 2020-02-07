@@ -2,6 +2,7 @@ import {pouchDbService} from "./pouchDbService";
 import $ from "jquery";
 import {constants} from "../../util/constants";
 import Vue from 'vue'
+import {localStorageService} from "./localStorageService";
 
 let databaseService = {};
 let _loggedInUser = null;
@@ -23,10 +24,19 @@ databaseService.loginReadonly = function () {
 /**
  * logs in read-write user with given password
  * @param password
+ * @param savePassword if true, password is saved
  * @return {Promise<void>}
  */
-databaseService.loginReadWrite = function (password) {
-    return login('accessibility-info-tree-user', password);
+databaseService.loginReadWrite = function (password, savePassword) {
+    let promise = login('accessibility-info-tree-user', password);
+    promise.then(() => {
+        if (savePassword) {
+            localStorageService.savePassword(password);
+        } else {
+            localStorageService.savePassword('');
+        }
+    });
+    return promise;
 };
 
 /**

@@ -1,5 +1,6 @@
 let localStorageService = {};
-let KEY_USERNAME = 'KEY_USERNAME';
+let KEY_USERNAME = 'AIT_KEY_ENTRY_USERNAME';
+let KEY_PASSWORD = 'AIT_KEY_PASSWORD';
 let storage = null;
 
 if (typeof (Storage) !== "undefined") {
@@ -41,12 +42,29 @@ localStorageService.remove = function (key) {
     }
 };
 
+/**
+ * saves the name of the user who created the last entry
+ * @param username
+ * @return {void | undefined}
+ */
 localStorageService.saveUser = function (username) {
     return localStorageService.save(KEY_USERNAME, username);
 };
 
+/**
+ * gets the name of the user who created the last entry
+ * @return {string | undefined}
+ */
 localStorageService.getUser = function () {
-    return localStorageService.get(KEY_USERNAME);
+    return localStorageService.get(KEY_USERNAME) || "";
+};
+
+localStorageService.savePassword = function (password) {
+    return localStorageService.save(KEY_PASSWORD, password);
+};
+
+localStorageService.getPassword = function () {
+    return localStorageService.get(KEY_PASSWORD);
 };
 
 
