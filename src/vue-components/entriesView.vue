@@ -181,8 +181,8 @@
                     return;
                 }
                 thiz.entries = thiz.entries.filter(e => e.id !== entry.id);
+                thiz.filteredEntries = thiz.filteredEntries.filter(e => e.id !== entry.id);
                 dataService.remove(entry.id);
-                thiz.filterChanged();
             },
             highlightInHTML(text) {
                 if (thiz.filterOptions.searchText.length < 3) {
