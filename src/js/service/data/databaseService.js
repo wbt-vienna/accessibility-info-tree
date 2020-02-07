@@ -153,11 +153,12 @@ function login (user, password) {
         _successfulPassword = password;
     });
     return promise;
-};
+}
 
 $(document).on(constants.EVENT_DB_UNAUTHORIZED, () => {
     if (_successfulUser && _successfulPassword) {
         log.warn('re-logging in after disconnect!');
+        clearTimeout(_timeoutHandler);
         _timeoutHandler = setTimeout(() => {
             _loggedInUser = null;
             login(_successfulUser, _successfulPassword);
