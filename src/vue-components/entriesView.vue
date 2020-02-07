@@ -19,6 +19,7 @@
                     <select id="inputChkOr" v-model="filterOptions.joinMode" @change="filterChanged()">
                         <option value="OR">ODER</option>
                         <option value="AND">UND</option>
+                        <option value="NOT">NICHT</option>
                     </select>
                 </div>
                 <div v-if="canEdit">
@@ -239,13 +240,17 @@
                                 return totalSearchTags.reduce((total, currentId) => {
                                     return total || entry.tags.indexOf(currentId) !== -1;
                                 }, false);
-                            } else {
+                            } else if (thiz.filterOptions.joinMode === 'AND') {
                                 return thiz.filterOptions.searchTags.reduce((total, currentId) => {
                                     let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
                                     let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
                                         return totalAny || entry.tags.indexOf(possibleTag) !== -1;
                                     }, false);
                                     return total && hasAny;
+                                }, true);
+                            } else if (thiz.filterOptions.joinMode === 'NOT') {
+                                return totalSearchTags.reduce((total, currentId) => {
+                                    return total && entry.tags.indexOf(currentId) === -1;
                                 }, true);
                             }
                         });
