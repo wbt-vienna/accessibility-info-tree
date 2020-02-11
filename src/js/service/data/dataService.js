@@ -3,6 +3,7 @@ import {Tags} from "../../model/Tags";
 import $ from "jquery";
 import {constants} from "../../util/constants";
 import {Entry} from "../../model/Entry";
+import {entryUtil} from "../../util/entryUtil";
 
 let dataService = {};
 let lastTags = null;
@@ -33,6 +34,9 @@ dataService.getEntries = function() {
     }
     return databaseService.getObject(Entry).then(result => {
         let list = result ? (result instanceof Array ? result : [result]) : [];
+        if (lastTags) {
+            list = entryUtil.sortTags(list, JSON.parse(JSON.stringify(lastTags.tags)));
+        }
         lastEntries = JSON.parse(JSON.stringify(list));
         return Promise.resolve(list)
     });
