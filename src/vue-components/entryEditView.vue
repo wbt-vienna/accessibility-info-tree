@@ -132,6 +132,7 @@
                     thiz.editEntry.link = 'https://www.google.com/search?q=' + thiz.editEntry.header;
                 }
                 localStorageService.saveUser(thiz.editEntry.updatedBy);
+                thiz.editEntry = entryUtil.sortTags(thiz.editEntry, thiz.tags);
                 dataService.saveEntry(thiz.editEntry).then(() => {
                     thiz.$router.go(-1);
                 });
