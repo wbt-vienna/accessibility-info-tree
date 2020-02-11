@@ -1,3 +1,5 @@
+import {tagUtil} from "./tagUtil";
+
 let entryUtil = {};
 
 /**
@@ -81,6 +83,33 @@ entryUtil.getPossibleDuplicates = function (entries, threshold) {
         }
     });
     return possibleDuplicates;
+};
+
+/**
+ * sorts one or more entries according to the order of "mandatory" tags
+ * @param entryOrEntries a single entry or a list of entries
+ * @param allTags a list of all tags
+ * @return {*[]} a single entry or list of entries where the tags of each entry are sorted
+ */
+entryUtil.sortTags = function(entryOrEntries, allTags) {
+    let isSingle = !(entryOrEntries instanceof Array);
+    entryOrEntries = isSingle ? [entryOrEntries] : entryOrEntries;
+    let mandatoryTags = tagUtil.getTagsWithProperty('mandatory', allTags);
+    let tagIndexMap = {};
+    mandatoryTags.forEach((mandatoryTag, index) => {
+        let allChildrenAndSelf = tagUtil.getAllChildIds(mandatoryTag, allTags).concat([mandatoryTag.id]);
+        allChildrenAndSelf.forEach(tagId => {
+            tagIndexMap[tagId] = index;
+        })
+    });
+    entryOrEntries.forEach(entry => {
+        entry.tags.sort((a, b) => {
+            let indexA = tagIndexMap[a] || 100;
+            let indexB = tagIndexMap[b] || 100;
+            return indexB - indexA;
+        });
+    });
+    return isSingle ? entryOrEntries[0] : entryOrEntries;
 };
 
 function setColor(entryOrEntries, color) {
