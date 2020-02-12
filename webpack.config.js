@@ -26,7 +26,7 @@ module.exports = env => {
                 presets: [
                     ['@babel/env', {
                         modules: false,
-                        useBuiltIns: 'entry',
+                        useBuiltIns: false,
                         targets: {
                             browsers: [
                                 '> 1%',
