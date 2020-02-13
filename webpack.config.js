@@ -18,29 +18,6 @@ module.exports = env => {
         loader: 'vue-loader'
     };
 
-    var babelRule = {
-        test: /\.m?js$/,
-        use: {
-            loader: 'babel-loader',
-            options: {
-                presets: [
-                    ['@babel/env', {
-                        modules: false,
-                        useBuiltIns: false,
-                        targets: {
-                            browsers: [
-                                '> 1%',
-                                'last 2 versions',
-                                'Firefox ESR',
-                                'ie >= 11'
-                            ],
-                        },
-                    }],
-                ],
-            },
-        },
-    };
-
     var resolve = {
         alias: {
             vue: 'vue/dist/vue.esm.js'
@@ -72,7 +49,7 @@ module.exports = env => {
         resolve: resolve,
         devServer: getDevServer(),
         module: {
-            rules: [babelRule, scssRule, vueRule],
+            rules: [scssRule, vueRule],
         }
     };
 };
