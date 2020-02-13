@@ -8,7 +8,7 @@
             <input id="inSavePassword" type="checkbox" v-model="savePassword"/>
             <label for="inSavePassword">Passwort speichern und in Zukunft automatisch einloggen</label>
         </div>
-        <span style="position: absolute; bottom: 2em; left: 1em">Zuletzt aktualisiert: 11.02.2020</span>
+        <span style="position: absolute; bottom: 2em; left: 1em">Zuletzt aktualisiert: 13.02.2020</span>
     </div>
 </template>
 
