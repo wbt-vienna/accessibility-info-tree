@@ -1,14 +1,20 @@
 <template>
     <div>
-        <label for="passwordField">Passwort: </label>
-        <input id="passwordField" type="password" v-model="password"/>
-        <button @click="login">Login</button>
-        <span v-if="wrongPassword">Falsches Passwort!</span>
-        <div>
-            <input id="inSavePassword" type="checkbox" v-model="savePassword"/>
-            <label for="inSavePassword">Passwort speichern und in Zukunft automatisch einloggen</label>
+        <div v-if="loggedIn">
+            <span>Bereits eingeloggt!</span>
+            <button @click="logout()">Ausloggen</button>
         </div>
-        <span style="position: absolute; bottom: 2em; left: 1em">Zuletzt aktualisiert: 13.02.2020</span>
+        <div v-if="!loggedIn">
+            <label for="passwordField">Passwort: </label>
+            <input id="passwordField" type="password" v-model="password"/>
+            <button @click="login">Login</button>
+            <span v-if="wrongPassword">Falsches Passwort!</span>
+            <div>
+                <input id="inSavePassword" type="checkbox" v-model="savePassword"/>
+                <label for="inSavePassword">Passwort speichern und in Zukunft automatisch einloggen</label>
+            </div>
+        </div>
+        <span style="position: absolute; bottom: 2em; left: 1em">Zuletzt aktualisiert: 14.02.2020</span>
     </div>
 </template>
 
@@ -24,7 +30,9 @@
             return {
                 password: '',
                 wrongPassword: false,
-                savePassword: false
+                savePassword: false,
+                loggedIn: databaseService.isLoggedInReadWrite(),
+                databaseService: databaseService
             }
         },
         methods: {
@@ -36,6 +44,11 @@
                     thiz.wrongPassword = true;
                 });
             },
+            logout() {
+                databaseService.loginReadonly().then(() => {
+                    thiz.loggedIn = false;
+                });
+            }
         },
         mounted() {
             thiz = this;
