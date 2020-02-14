@@ -1,22 +1,25 @@
 import {constants} from "../util/constants";
-import {ObjectModel} from "objectmodel"
-import {ArrayModel} from "objectmodel";
+import {ArrayModel, ObjectModel} from "objectmodel"
 import {Tag} from "./Tag"
 
-let Tags = ObjectModel({
+class Tags extends ObjectModel({
     id: [String],
     modelName: [String],
     tags: ArrayModel(Tag)
-}).defaultTo({
-    id: constants.TAGS_DOCUMENT_ID,
-    modelName: getModelName(),
-    tags: []
-});
+}) {
+    constructor(properties) {
+        let defaults = {
+            id: constants.TAGS_DOCUMENT_ID,
+            modelName: Tags.getModelName(),
+            tags: []
+        };
+        properties = properties || {};
+        super(Object.assign(defaults, properties));
+    }
 
-function getModelName() {
-    return "Tags";
+    static getModelName() {
+        return "Tags";
+    }
 }
-
-Tags.getModelName = getModelName;
 
 export {Tags};

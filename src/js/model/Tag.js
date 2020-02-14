@@ -1,7 +1,6 @@
-import {ObjectModel} from "objectmodel"
-import {ArrayModel} from "objectmodel";
+import {ArrayModel, ObjectModel} from "objectmodel"
 
-let Tag = ObjectModel({
+class Tag extends ObjectModel({
     id: [String],
     modelName: [String],
     label: [Object],
@@ -12,18 +11,22 @@ let Tag = ObjectModel({
     optional: [Boolean], //optional that a child of this tag is tagged (set to true in order to add this tag to "optional" section in create entry view)
     parents: ArrayModel(String),
     children: ArrayModel(String),
-}).defaultTo({
-    id: "",
-    modelName: getModelName(),
-    label: {},
-    parents: [],
-    children: []
-});
+}) {
+    constructor(properties) {
+        let defaults = {
+            id: "",
+            modelName: Tag.getModelName(),
+            label: {},
+            parents: [],
+            children: []
+        };
+        properties = properties || {};
+        super(Object.assign(defaults, properties));
+    }
 
-function getModelName() {
-    return "Tag";
+    static getModelName() {
+        return "Tag";
+    }
 }
-
-Tag.getModelName = getModelName;
 
 export {Tag};
