@@ -1,5 +1,5 @@
 # accessibility-info-tree
-Structured information collection about all kinds of topics in the field of accessibility. See [live version](https://asterics.github.io/accessibility-info-tree/).
+Structured information collection about all kinds of topics in the field of accessibility. See [live version](https://wbt-vienna.github.io/accessibility-info-tree/).
 
 ## REST API
 It's possible to retrieve the hierarchy of tags using the following REST commands:
