@@ -9,6 +9,7 @@ PouchDB.plugin(PouchFind);
 let pouchDbService = {};
 let _pouchDb = null;
 let _knownRevs = [];
+let _enableChangeHandler = false;
 
 pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress) {
     if (_pouchDb) {
@@ -172,11 +173,18 @@ function dbResToResolveObject(res) {
 }
 
 function changeHandler(change) {
+    if (!_enableChangeHandler) {
+        return;
+    }
     let rev = change.doc._rev;
     if (_knownRevs.indexOf(rev) === -1) {
         _knownRevs.push(rev);
         $(document).trigger(constants.EVENT_DB_PULL_UPDATED, [change.doc]);
     }
 }
+
+setTimeout(() => {
+    _enableChangeHandler = true;
+}, 3000);
 
 export {pouchDbService};
