@@ -1,6 +1,12 @@
 <template>
-    <div v-if="editEntry" class="container" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()">
-        <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
+    <div v-if="editEntry" class="container" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
+        <div class="row">
+            <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
+            <div v-if="!isNew && (previousEntry || nextEntry)" style="display: flex; justify-content: flex-end; flex-grow: 1">
+                <button :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i></button>
+                <button :disabled="!nextEntry" @click="next()"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
         <div class="row">
             <label class="col-md-3" for="inputHeader">Überschrift*</label>
             <input type="text" class="col-md-6" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
@@ -48,7 +54,11 @@
             <button class="col-md-8 col-md-offset-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-8 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern [Strg + ENTER]</button>
+            <button class="col-md-8 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern und zur Liste [Strg + ENTER]</button>
+        </div>
+        <div class="row" v-if="!isNew && (previousEntry || nextEntry)">
+            <button class="col-md-4 col-md-offset-3" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i> voriger Eintrag [Strg + Links]</button>
+            <button class="col-md-4" :disabled="!nextEntry" @click="next()">nächster Eintrag [Strg + Rechts] <i class="fas fa-arrow-right"></i></button>
         </div>
     </div>
 </template>
@@ -74,10 +84,12 @@
                 optionalTags: [],
                 entries: null,
                 editEntry: null,
+                originalEditEntryJSON: null,
                 lastUpdatedBy: "",
                 isNew: false,
                 recomputeProperty: 0,
                 existingSimilar: [],
+                lastSearchResults: localStorageService.getSearchResults(),
                 tagUtil: tagUtil,
                 constants: constants
             }
@@ -92,11 +104,31 @@
                     }
                     validTagSelectors = validTagSelectors && thiz.$refs['tagSelector' + index][0].isValid;
                 });
-                return validTagSelectors && thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy && (!thiz.editEntry.link || thiz.editEntry.link.indexOf('http') === 0);
+                let valid = validTagSelectors && thiz.editEntry && thiz.editEntry.header && thiz.editEntry.updatedBy && (!thiz.editEntry.link || thiz.editEntry.link.indexOf('http') === 0);
+                return valid;
+            },
+            nextEntry: function() {
+                if (!this.lastSearchResults) {
+                    return null;
+                }
+                return this.lastSearchResults.reduce((total, current, index) => {
+                    let candidate = current.id === thiz.editEntry.id ? this.lastSearchResults[index + 1] : null;
+                    return total ? total : candidate;
+                }, null);
+            },
+            previousEntry: function() {
+                if (!this.lastSearchResults) {
+                    return null;
+                }
+                return this.lastSearchResults.reduce((total, current, index) => {
+                    let candidate = current.id === thiz.editEntry.id ? this.lastSearchResults[index - 1] : null;
+                    return total ? total : candidate;
+                }, null);
             }
         },
         methods: {
             init() {
+                thiz.existingSimilar = [];
                 if (!databaseService.isLoggedInReadWrite()) {
                     return thiz.$router.push('/login');
                 }
@@ -110,6 +142,7 @@
                         dataService.getEntry(thiz.$route.params.editid).then(result => {
                             thiz.isNew = !result;
                             thiz.editEntry = result ? JSON.parse(JSON.stringify(result)) : new Entry();
+                            thiz.originalEditEntryJSON = JSON.stringify(thiz.editEntry);
                             thiz.lastUpdatedBy = thiz.editEntry.updatedBy;
                             thiz.editEntry.updatedBy = localStorageService.getUser() || "";
                             thiz.recomputeSimilar(0);
@@ -125,6 +158,44 @@
                 if (!thiz.valid) {
                     return;
                 }
+                thiz.saveInternal().then(() => {
+                    thiz.$router.push('/entries/');
+                });
+            },
+            next() {
+                if (!thiz.nextEntry) {
+                    return;
+                }
+                if (!thiz.valid) {
+                    return thiz.navigateTo(thiz.nextEntry.id);
+                }
+                thiz.saveInternal().then(() => {
+                    thiz.navigateTo(thiz.nextEntry.id);
+                });
+            },
+            previous() {
+                if (!thiz.previousEntry) {
+                    return;
+                }
+                if (!thiz.valid) {
+                    return thiz.navigateTo(thiz.previousEntry.id);
+                }
+                thiz.saveInternal().then(() => {
+                    thiz.navigateTo(thiz.previousEntry.id);
+                });
+            },
+            navigateTo(id) {
+                thiz.$router.push('/entry/edit/' + id);
+                thiz.init();
+            },
+            saveInternal() {
+                if (!thiz.valid) {
+                    return Promise.resolve();
+                }
+                thiz.editEntry = entryUtil.sortTags(thiz.editEntry, thiz.tags);
+                if (thiz.originalEditEntryJSON === JSON.stringify(thiz.editEntry)) {
+                    return Promise.resolve();
+                }
                 if (!thiz.isNew) {
                     thiz.editEntry.updated = new Date().getTime();
                 }
@@ -132,10 +203,7 @@
                     thiz.editEntry.link = 'https://www.google.com/search?q=' + thiz.editEntry.header;
                 }
                 localStorageService.saveUser(thiz.editEntry.updatedBy);
-                thiz.editEntry = entryUtil.sortTags(thiz.editEntry, thiz.tags);
-                dataService.saveEntry(thiz.editEntry).then(() => {
-                    thiz.$router.go(-1);
-                });
+                return dataService.saveEntry(thiz.editEntry);
             },
             recomputeSimilar(timeout) {
                 util.debounce(() => {
