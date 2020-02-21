@@ -112,6 +112,21 @@ entryUtil.sortTags = function(entryOrEntries, allTags) {
     return isSingle ? entryOrEntries[0] : entryOrEntries;
 };
 
+entryUtil.isValid = function (entry, tags) {
+    let valid = entry && entry.header && entry.short && entry.updatedBy && (!entry.link || entry.link.indexOf('http') === 0);
+    if (!valid) {
+        return false;
+    }
+    let mandatoryTags = tagUtil.getTagsWithProperty('mandatory', tags);
+    mandatoryTags.forEach((mandatoryTag, index) => {
+        let childrenIds = tagUtil.getAllChildIds(mandatoryTag, tags);
+        valid = valid && entry.tags.reduce((total, currentId) => {
+            return childrenIds.indexOf(currentId) !== -1 || total;
+        }, false);
+    });
+    return valid;
+};
+
 function setColor(entryOrEntries, color) {
     entryOrEntries = entryOrEntries instanceof Array ? entryOrEntries : [entryOrEntries];
     entryOrEntries.forEach(entry => {
