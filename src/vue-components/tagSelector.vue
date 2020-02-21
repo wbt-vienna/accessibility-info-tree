@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="col-md-8">
-            Tags wählen <a href="javascript:;" @click="showAll()">alle anzeigen</a> <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Tag suchen" style="height: 1.5em;"/>
+            Tags wählen <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Tag suchen" style="height: 1.5em;"/> <a href="javascript:;" @click="showAll()">alle anzeigen</a>
             <div>
                 <button class="tagButton" @click="addTag(tag.id)" v-for="tag in selectTags" :style="tagUtil.getColorStyle(tag.id, tags)">
                     <i class="fas fa-plus"></i> {{tag.label.de}}
@@ -51,9 +51,6 @@
         computed: {
             relevantTags: function () {
                 return this.elementTags.filter(tag => this.allChildren.indexOf(tag) !== -1);
-            },
-            isValid: function () {
-                return this.relevantTags.length > 0;
             }
         },
         data() {
