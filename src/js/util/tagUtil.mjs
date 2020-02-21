@@ -23,11 +23,11 @@ tagUtil.getTagFromLabel = function(label, tags) {
     return tags.filter(tag => tagUtil.getLabel(tag, tags) === label)[0];
 };
 
-tagUtil.getAllChildren = function (tagIdOrTag, tags, maxDepth) {
+tagUtil.getAllChildren = function (tagIdOrTag, tags, maxDepth, includeDepth) {
     let result = [];
     tagIdOrTag = tagIdOrTag instanceof Array ? tagIdOrTag : [tagIdOrTag];
     tagIdOrTag.forEach(tagId => {
-        result = result.concat(getAll(tagId, tags, true, maxDepth))
+        result = result.concat(getAll(tagId, tags, true, maxDepth, includeDepth))
     });
     return result;
 };
@@ -61,16 +61,26 @@ tagUtil.getLabel = function (tagIdOrTag, tags) {
     return tag.label.de ? tag.label.de : tag.id;
 };
 
-tagUtil.getColor = function (tagIdOrTag, tags) {
-    let tag = tagUtil.getTag(tagIdOrTag, tags);
+tagUtil.getColor = function (tagIdOrTag, tags, preferredParentIds) {
+    let tag = JSON.parse(JSON.stringify(tagUtil.getTag(tagIdOrTag, tags)));
+    preferredParentIds = preferredParentIds || [];
+    tag.parents.sort((a,b) => {
+        if (preferredParentIds.indexOf(a) !== -1) {
+            return -1;
+        }
+        if (preferredParentIds.indexOf(b) !== -1) {
+            return 1;
+        }
+        return 0;
+    });
     if (tag && !tag.color && tag.parents[0]) {
         return tagUtil.getColor(tag.parents[0], tags);
     }
     return tag ? tag.color : '';
 };
 
-tagUtil.getColorStyle = function(tagIdOrTag, tags) {
-    let color = tagUtil.getColor(tagIdOrTag, tags);
+tagUtil.getColorStyle = function(tagIdOrTag, tags, preferredParents) {
+    let color = tagUtil.getColor(tagIdOrTag, tags, preferredParents);
     let highContrastColor = getHighContrastTextColor(color);
     return  `background-color: ${color}; color: ${highContrastColor};`;
 };
@@ -158,7 +168,8 @@ tagUtil.getTagsWithProperty = function (propertyName, tags) {
     return result;
 };
 
-function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
+function getAll(tagIdOrTag, tags, getChildren, maxDepth, includeDepth, currentDepth) {
+    currentDepth = currentDepth || 1;
     let tag = tagUtil.getTag(tagIdOrTag, tags);
     if (!tag) {
         return [];
@@ -167,10 +178,13 @@ function getAll(tagIdOrTag, tags, getChildren, maxDepth) {
     let type = getChildren ? 'children' : 'parents';
     tag[type].forEach(relativeId => {
         let relative = tagUtil.getTag(relativeId, tags);
+        if (includeDepth) {
+            relative.depth = currentDepth;
+        }
         allRelatives.push(relative);
         if (!maxDepth || maxDepth > 1) {
             let newDepth = !maxDepth ? maxDepth : maxDepth - 1;
-            allRelatives = allRelatives.concat(getAll(relative, tags, getChildren, newDepth));
+            allRelatives = allRelatives.concat(getAll(relative, tags, getChildren, newDepth, includeDepth, currentDepth + 1));
         }
     });
     return [...new Set(allRelatives)];
