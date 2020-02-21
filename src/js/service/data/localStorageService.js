@@ -2,6 +2,7 @@ let localStorageService = {};
 let KEY_USERNAME = 'AIT_KEY_ENTRY_USERNAME';
 let KEY_PASSWORD = 'AIT_KEY_PASSWORD';
 let KEY_FILTEROPTIONS = 'AIT_KEY_FILTEROPTIONS';
+let KEY_LAST_SEARCH_RESULTS = 'AIT_KEY_LAST_SEARCH_RESULTS';
 let storage = null;
 let _tempStorage = {};
 
@@ -77,5 +78,12 @@ localStorageService.getFilterOptions = function () {
     return JSON.parse(_tempStorage[KEY_FILTEROPTIONS] || null);
 };
 
+localStorageService.saveSearchResults = function (results) {
+    return _tempStorage[KEY_LAST_SEARCH_RESULTS] = JSON.stringify(results);
+};
+
+localStorageService.getSearchResults = function () {
+    return JSON.parse(_tempStorage[KEY_LAST_SEARCH_RESULTS] || null);
+};
 
 export {localStorageService};
