@@ -201,65 +201,72 @@
                 return `<span style="font-size: 0.6em"> (${entry.link})</span>`
             },
             filterChanged(debounceTime) {
-                if (!thiz.entries) {
-                    return;
-                }
                 thiz.loading = true;
-                util.debounce(() => {
-                    thiz.filterOptions.limitResults = 50;
-                    thiz.filteredEntries = thiz.entries;
-                    if (thiz.filterOptions.onlyPossibleDuplicates) {
-                        thiz.filteredEntries = entryUtil.getPossibleDuplicates(thiz.entries);
-                        thiz.loading = false;
-                        return;
-                    }
-                    history.pushState(null, null, '#/entries/');
-                    if (thiz.filterOptions.updatedBy) {
-                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => entry.updatedBy === thiz.filterOptions.updatedBy);
-                    }
-                    if (thiz.filterOptions.searchText) {
-                        history.pushState(null, null, '#/entries/search/' + thiz.filterOptions.searchText);
-                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
-                            let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
-                            let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
-                            let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1 : false;
-                            let inTags = entry.tags.reduce((total, currentTagId) => {
-                                let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
-                                return total || tagLabel.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
-                            }, false);
-                            return inHeader || inTags || inLink || inShort;
-                        });
-                    }
-                    if (thiz.filterOptions.searchTags.length > 0) {
-                        history.pushState(null, null, '#/entries/search/tag/' + thiz.filterOptions.searchTags.reduce((total, current) => total + current + ';', ''));
-                        let totalSearchTags = thiz.filterOptions.searchTags.reduce((total, currentId) => {
-                            return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
-                        }, thiz.filterOptions.searchTags);
-                        thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
-                            if (thiz.filterOptions.joinMode === 'OR') {
-                                return totalSearchTags.reduce((total, currentId) => {
-                                    return total || entry.tags.indexOf(currentId) !== -1;
-                                }, false);
-                            } else if (thiz.filterOptions.joinMode === 'AND') {
-                                return thiz.filterOptions.searchTags.reduce((total, currentId) => {
-                                    let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
-                                    let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
-                                        return totalAny || entry.tags.indexOf(possibleTag) !== -1;
-                                    }, false);
-                                    return total && hasAny;
-                                }, true);
-                            } else if (thiz.filterOptions.joinMode === 'NOT') {
-                                return totalSearchTags.reduce((total, currentId) => {
-                                    return total && entry.tags.indexOf(currentId) === -1;
-                                }, true);
-                            }
-                        });
-                    }
-                    thiz.filteredEntries.sort((a, b) => {
-                        return b.updated - a.updated;
-                    });
+                thiz.doFilter(debounceTime).then(() => {
                     thiz.loading = false;
-                }, debounceTime ? debounceTime : 0);
+                    localStorageService.saveSearchResults(thiz.filteredEntries);
+                });
+            },
+            doFilter(debounceTime) {
+                return new Promise(resolve => {
+                    if (!thiz.entries) {
+                        return resolve();
+                    }
+                    util.debounce(() => {
+                        thiz.filterOptions.limitResults = 50;
+                        thiz.filteredEntries = thiz.entries;
+                        if (thiz.filterOptions.onlyPossibleDuplicates) {
+                            thiz.filteredEntries = entryUtil.getPossibleDuplicates(thiz.entries);
+                            return resolve();
+                        }
+                        history.pushState(null, null, '#/entries/');
+                        if (thiz.filterOptions.updatedBy) {
+                            thiz.filteredEntries = thiz.filteredEntries.filter(entry => entry.updatedBy === thiz.filterOptions.updatedBy);
+                        }
+                        if (thiz.filterOptions.searchText) {
+                            history.pushState(null, null, '#/entries/search/' + thiz.filterOptions.searchText);
+                            thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
+                                let inHeader = entry.header.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
+                                let inLink = entry.link.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
+                                let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1 : false;
+                                let inTags = entry.tags.reduce((total, currentTagId) => {
+                                    let tagLabel = tagUtil.getLabel(currentTagId, thiz.tags);
+                                    return total || tagLabel.toLocaleLowerCase().indexOf(thiz.filterOptions.searchText.toLocaleLowerCase()) !== -1;
+                                }, false);
+                                return inHeader || inTags || inLink || inShort;
+                            });
+                        }
+                        if (thiz.filterOptions.searchTags.length > 0) {
+                            history.pushState(null, null, '#/entries/search/tag/' + thiz.filterOptions.searchTags.reduce((total, current) => total + current + ';', ''));
+                            let totalSearchTags = thiz.filterOptions.searchTags.reduce((total, currentId) => {
+                                return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, thiz.tags)))];
+                            }, thiz.filterOptions.searchTags);
+                            thiz.filteredEntries = thiz.filteredEntries.filter(entry => {
+                                if (thiz.filterOptions.joinMode === 'OR') {
+                                    return totalSearchTags.reduce((total, currentId) => {
+                                        return total || entry.tags.indexOf(currentId) !== -1;
+                                    }, false);
+                                } else if (thiz.filterOptions.joinMode === 'AND') {
+                                    return thiz.filterOptions.searchTags.reduce((total, currentId) => {
+                                        let possibleTags = tagUtil.getAllChildIds(currentId, thiz.tags).concat([currentId]);
+                                        let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
+                                            return totalAny || entry.tags.indexOf(possibleTag) !== -1;
+                                        }, false);
+                                        return total && hasAny;
+                                    }, true);
+                                } else if (thiz.filterOptions.joinMode === 'NOT') {
+                                    return totalSearchTags.reduce((total, currentId) => {
+                                        return total && entry.tags.indexOf(currentId) === -1;
+                                    }, true);
+                                }
+                            });
+                        }
+                        thiz.filteredEntries.sort((a, b) => {
+                            return b.updated - a.updated;
+                        });
+                        return resolve();
+                    }, debounceTime ? debounceTime : 0);
+                });
             }
         },
         mounted() {
