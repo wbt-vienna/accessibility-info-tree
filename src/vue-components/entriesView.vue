@@ -33,6 +33,10 @@
                     <input id="possibleDuplicates" type="checkbox" v-model="filterOptions.onlyPossibleDuplicates" @change="filterChanged()">
                     <label for="possibleDuplicates">Nur potentielle Duplikate anzeigen</label>
                 </div>
+                <div v-if="canEdit">
+                    <input id="incomplete" type="checkbox" v-model="filterOptions.onlyIncomplete" @change="filterChanged()">
+                    <label for="incomplete">Nur unvollständige Einträge anzeigen</label>
+                </div>
             </accordion>
         </div>
         <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
@@ -82,11 +86,13 @@
                 entries: null,
                 filteredEntries: [],
                 filterOptions: {
-                    joinMode: 'OR',
+                    joinMode: 'AND',
                     updatedBy: "",
                     limitResults: 50,
                     searchText: this.$route.params.searchtext || "",
-                    searchTags: []
+                    searchTags: [],
+                    onlyPossibleDuplicates: false,
+                    onlyIncomplete: false
                 },
                 canEdit: databaseService.isLoggedInReadWrite(),
                 searchBaseTags: [],
@@ -204,6 +210,9 @@
                 thiz.loading = true;
                 thiz.doFilter(debounceTime).then(() => {
                     thiz.loading = false;
+                    thiz.filteredEntries.sort((a, b) => {
+                        return b.updated - a.updated;
+                    });
                     localStorageService.saveSearchResults(thiz.filteredEntries);
                 });
             },
@@ -217,6 +226,10 @@
                         thiz.filteredEntries = thiz.entries;
                         if (thiz.filterOptions.onlyPossibleDuplicates) {
                             thiz.filteredEntries = entryUtil.getPossibleDuplicates(thiz.entries);
+                            return resolve();
+                        }
+                        if (thiz.filterOptions.onlyIncomplete) {
+                            thiz.filteredEntries = thiz.entries.filter(entry => !entryUtil.isValid(entry, thiz.tags));
                             return resolve();
                         }
                         history.pushState(null, null, '#/entries/');
@@ -261,9 +274,6 @@
                                 }
                             });
                         }
-                        thiz.filteredEntries.sort((a, b) => {
-                            return b.updated - a.updated;
-                        });
                         return resolve();
                     }, debounceTime ? debounceTime : 0);
                 });
