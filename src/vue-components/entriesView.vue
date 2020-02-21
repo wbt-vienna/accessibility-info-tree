@@ -10,7 +10,7 @@
         </div>
         <div v-if="tags">
             <tag-selector :start-tag-ids="searchBaseTags" :tags="tags" v-model="filterOptions.searchTags"
-                          @change="filterChanged()"></tag-selector>
+                          @change="filterChanged()" :show-search-bar="true"></tag-selector>
         </div>
         <div class="row" v-if="tags">
             <accordion acc-label="Erweiterte Sucheinstellugen" class="col-md-12" style="margin-top: 1em">
