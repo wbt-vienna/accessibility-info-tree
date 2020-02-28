@@ -127,6 +127,56 @@ entryUtil.isValid = function (entry, tags) {
     return valid;
 };
 
+entryUtil.filterByText = function (entries, searchText, tags) {
+    if (!entries || entries.length === 0) {
+        return [];
+    }
+    if (!searchText) {
+        return entries;
+    }
+    return entries.filter(entry => {
+        let inHeader = entry.header.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1;
+        let inLink = entry.link.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1;
+        let inShort = entry.short ? entry.short.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1 : false;
+        let inTags = entry.tags.reduce((total, currentTagId) => {
+            let tagLabel = tagUtil.getLabel(currentTagId, tags);
+            return total || tagLabel.toLocaleLowerCase().indexOf(searchText.toLocaleLowerCase()) !== -1;
+        }, false);
+        return inHeader || inTags || inLink || inShort;
+    });
+};
+
+entryUtil.filterByTags = function (entries, searchTags, joinMode, tags) {
+    if (!entries || entries.length === 0) {
+        return [];
+    }
+    if (!searchTags || searchTags.length === 0) {
+        return entries;
+    }
+    let totalSearchTags = searchTags.reduce((total, currentId) => {
+        return [...new Set(total.concat(tagUtil.getAllChildIds(currentId, tags)))];
+    }, searchTags);
+    return entries.filter(entry => {
+        if (joinMode === 'OR') {
+            return totalSearchTags.reduce((total, currentId) => {
+                return total || entry.tags.indexOf(currentId) !== -1;
+            }, false);
+        } else if (joinMode === 'AND') {
+            return searchTags.reduce((total, currentId) => {
+                let possibleTags = tagUtil.getAllChildIds(currentId, tags).concat([currentId]);
+                let hasAny = possibleTags.reduce((totalAny, possibleTag) => {
+                    return totalAny || entry.tags.indexOf(possibleTag) !== -1;
+                }, false);
+                return total && hasAny;
+            }, true);
+        } else if (joinMode === 'NOT') {
+            return totalSearchTags.reduce((total, currentId) => {
+                return total && entry.tags.indexOf(currentId) === -1;
+            }, true);
+        }
+    });
+};
+
 function setColor(entryOrEntries, color) {
     entryOrEntries = entryOrEntries instanceof Array ? entryOrEntries : [entryOrEntries];
     entryOrEntries.forEach(entry => {
