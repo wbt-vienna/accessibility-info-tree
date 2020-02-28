@@ -1,4 +1,4 @@
-import {tagUtil} from "./tagUtil";
+import {tagUtil} from "./tagUtil.mjs";
 
 let entryUtil = {};
 
@@ -147,7 +147,7 @@ entryUtil.filterByText = function (entries, searchText, tags) {
 };
 
 entryUtil.filterByTags = function (entries, searchTags, joinMode, tags) {
-    if (!entries || entries.length === 0) {
+    if (!entries || entries.length === 0 || !joinMode) {
         return [];
     }
     if (!searchTags || searchTags.length === 0) {
