@@ -8,6 +8,7 @@ import logger from "morgan";
 import cors from "cors";
 import path from "path";
 import {tagUtil} from "../src/js/util/tagUtil.mjs";
+import {entryUtil} from "../src/js/util/entryUtil.mjs";
 import NodeCouchDb from "node-couchdb";
 const __dirname = path.resolve();
 
@@ -77,6 +78,32 @@ app.get('/tag/:id/parents/:maxdepth?', function (req, res) {
     })
 });
 
+app.get('/entries', function (req, res) {
+    getEntries(res).then(entries => {
+        res.send(entries);
+    })
+});
+
+app.get('/entries/search/:text', function (req, res) {
+    getEntries(res).then(entries => {
+        getTags(res).then(tags => {
+            res.send(entryUtil.filterByText(entries, req.params.text, tags));
+        });
+    })
+});
+
+app.get('/entries/tags/:taglist/:joinmode?', function (req, res) {
+    getEntries(res).then(entries => {
+        getTags(res).then(tags => {
+            let taglist = req.params.taglist.split(';') || [];
+            taglist = taglist.filter(tagId => !!tagId);
+            let joinmode = req.params.joinmode || 'AND';
+            joinmode = ['AND', 'OR', 'NOT'].indexOf(joinmode.toUpperCase()) !== -1 ? joinmode : 'AND';
+            res.send(entryUtil.filterByTags(entries, taglist, joinmode, tags));
+        });
+    })
+});
+
 if (isProd) {
     https.createServer(credentials, app).listen(4000);
 } else {
@@ -90,6 +117,27 @@ function getTags(response) {
                 delete tag.modelName;
                 return tag;
             }));
+        }, err => {
+            response.status(500).send(err);
+        });
+    });
+}
+
+function getEntries(response) {
+    return new Promise((resolve, reject) => {
+        let queryOptions = {
+            startkey: "Entry",
+            endkey: "Entry" + '\uffff',
+            include_docs: true
+        };
+        couchDb.get("accessibility-info-tree", '_all_docs', queryOptions).then(({data, headers, status}) => {
+            let entries = data.rows.map(r => r.doc);
+            entries.forEach(entry => {
+                delete entry.modelName;
+                delete entry._id;
+                delete entry._rev;
+            });
+            resolve(entries);
         }, err => {
             response.status(500).send(err);
         });
