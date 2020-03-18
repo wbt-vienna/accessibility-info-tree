@@ -1,9 +1,7 @@
 import $ from 'jquery';
 import PouchDB from 'pouchdb';
-import PouchAuth from 'pouchdb-authentication';
 import PouchFind from 'pouchdb-find';
 import {constants} from "../../util/constants";
-PouchDB.plugin(PouchAuth);
 PouchDB.plugin(PouchFind);
 
 let pouchDbService = {};
@@ -12,27 +10,31 @@ let _knownRevs = [];
 let _enableChangeHandler = false;
 
 pouchDbService.initDatabase = function (username, password, remoteCouchDbAddress) {
-    if (_pouchDb) {
-        _pouchDb.close();
-    }
-    _pouchDb = new PouchDB(remoteCouchDbAddress, {skip_setup: true});
-    _pouchDb.changes({
-        since: 'now',
-        live: true,
-        include_docs: true
-    }).on('change', function (change) {
-        changeHandler(change);
-    }).on('error', function (err) {
-        log.warn('pouchdb changes error: ');
-        log.warn(err);
-        $(document).trigger(constants.EVENT_DB_UNAUTHORIZED);
+    return new Promise((resolve, reject) => {
+        if (_pouchDb) {
+            _pouchDb.close();
+        }
+        _pouchDb = new PouchDB(remoteCouchDbAddress, {skip_setup: true, auth: {username, password}});
+        _pouchDb.info().then(info => {
+            if (info.error === 'unauthorized') {
+                return reject();
+            }
+            _pouchDb.changes({
+                since: 'now',
+                live: true,
+                include_docs: true
+            }).on('change', function (change) {
+                changeHandler(change);
+            }).on('error', function (err) {
+                log.warn('pouchdb changes error: ');
+                log.warn(err);
+                $(document).trigger(constants.EVENT_DB_UNAUTHORIZED);
+            });
+            resolve();
+        }).catch(() => {
+            reject();
+        });
     });
-    let promise = _pouchDb.logIn(username, password);
-    promise.catch(() => {
-        _pouchDb = null;
-    });
-    return promise;
-
 };
 
 pouchDbService.isLoggedIn = function() {
