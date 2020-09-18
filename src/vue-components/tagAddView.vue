@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedTag" class="container" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
+    <div v-if="selectedTag" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
         <h2>Tag hinzufügen (Kind von '{{tagUtil.getLabel(parentTag)}}')</h2>
         <div class="row">
             <label class="col-md-3" for="idInput" style="align-items: center;">ID</label>
@@ -52,10 +52,10 @@
             <span class="col-md-6">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
         </div>
         <div class="row" style="margin-top: 2em">
-            <button class="col-md-6 col-md-offset-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            <button class="col-md-6 offset-md-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-6 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [Strg + ENTER]</button>
+            <button class="col-md-6 offset-md-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [Strg + ENTER]</button>
         </div>
     </div>
 </template>
@@ -131,6 +131,12 @@
         display: flex;
         justify-content: flex-end;
         padding-right: 1em;
+    }
+
+    @media (max-width: 768px) {
+        label {
+            justify-content: unset;
+        }
     }
 
     .row {

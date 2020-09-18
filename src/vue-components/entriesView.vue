@@ -45,7 +45,7 @@
             <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
             <ul v-if="!loading">
                 <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)" :style="'background-color:' + entry.color">
-                    <router-link v-if="canEdit" class="button actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
+                    <router-link v-if="canEdit" class="btn btn-link actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
                     <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
                             class="fas fa-trash-alt"/></button>
 
@@ -265,6 +265,10 @@
     .actionBtn {
         padding: 0 3px;
         margin: 0 2px;
+        border: 1px solid gray;
+        background: lightgray;
+        color: black;
+        border-radius: 0;
     }
 
     .entryHeader {

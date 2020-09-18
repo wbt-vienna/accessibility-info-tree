@@ -7,24 +7,68 @@
 
     <title>Accessibility Info Tree</title>
 
-    <link rel="stylesheet" href="app/css/custom.css">
     <link rel="stylesheet" href="app/lib/fontawesome-free-5.12.0-web/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="app/css/custom.css">
+
     <script src="app/lib/difflib.js"></script>
 </head>
 <body>
 
-<div id="app">
-    <h1>Accessibility Info Tree</h1>
-    <header>
-        <router-link class="button" to="/entries">Einträge</router-link>
-        <router-link class="button" to="/tree">Tag-Baum</router-link>
-        <router-link class="button" to="/tree/edit">Tags bearbeiten</router-link>
-        <router-link class="button" to="/login">Login</router-link>
+<div id="app" class="content">
+    <header class="own-container">
+        <h1 style="display: inline-block; margin-bottom: 0">
+            <a href="https://wbt.wien/" title="Projektseite Wissensdrehscheibe" target="_blank"><img aria-hidden="true" src="app/img/prepart.png"/></a><a href="." title="Wissensbasis Home"><img aria-hidden="true" src="app/img/wissensbasis.png"/></a>
+        </h1>
+        <div class="header-links">
+            <router-link class="button first-link" to="/entries">Einträge</router-link>
+            <router-link class="button" to="/tree">Tag-Baum</router-link>
+            <router-link class="button" to="/tree/edit">Tags bearbeiten</router-link>
+            <router-link class="button" to="/login">Login</router-link>
+        </div>
     </header>
-    <main>
+    <main class="own-container">
         <router-view></router-view>
     </main>
 </div>
+<footer class="donut-footer own-container">
+    <div class="footer-content">
+        <nav class="qa-nav-footer">
+            <div class="row">
+                <div class="col-md-6 col-lg-8" style="margin-bottom: 1em">
+                    <span>Diese Seite ist Teil des Projektes</span>
+                    <a href="http://wbt.wien/" target="_blank">Wissensdrehschreibe für Barrierefreie Technologien</a>
+                    <span>an der</span>
+                    <a href="https://www.technikum-wien.at/" target="_blank">FH Technikum Wien</a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="https://www.technikum-wien.at/" target="_blank">
+                        <img src="app/img/fhtw.png"
+                             style="height: 4em; display: inline-block; margin: 0 1em;"/>
+                    </a>
+                    <a href="https://www.wien.gv.at/kontakte/ma23/" target="_blank">
+                        <img src="app/img/ma23.jpg"
+                             style="height: 4em; display: inline-block; margin: 0 1em;"/>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <ul role="presentation" class="col-md-6">
+                    <li role="tab">
+                        <a href="http://wbt.wien/" target="_blank">Projektseite Wissensdrehscheibe</a>
+                    </li>
+                    <li role="tab">
+                        <a href="http://wbt.wien/" target="_blank">Impressum</a>
+                    </li>
+                    <li role="tab">
+                        <a href="http://wbt.wien/" target="_blank">Kontakt</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <span style="padding-left: 15px">Zuletzt aktualisiert: 18.03.2020</span>
+    </div>
+</footer>
 
 <script src="app/build/a11y-info-tree.bundle.js"></script>
 </body>

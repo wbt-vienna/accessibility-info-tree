@@ -9,7 +9,6 @@ import EntryEditView from '../vue-components/entryEditView.vue'
 import EntriesView from '../vue-components/entriesView.vue'
 import * as log from 'loglevel';
 import {databaseService} from "./service/data/databaseService";
-import 'mini.css';
 import {localStorageService} from "./service/data/localStorageService";
 
 function init() {

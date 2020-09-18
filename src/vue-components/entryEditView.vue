@@ -1,8 +1,8 @@
 <template>
-    <div v-if="editEntry" class="container" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
+    <div v-if="editEntry" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
         <div class="row">
             <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
-            <div v-if="!isNew" style="display: flex; align-items: center">
+            <div v-if="!isNew" style="display: flex; align-items: center; margin-left: 1em">
                 <i v-if="valid" title="aktueller Eintrag enthält alle Pflichtfelder" class="fas fa-check" style="color: green"/>
                 <i v-if="!valid" title="aktueller Eintrag enthält nicht alle Pflichtfelder" class="fas fa-times" style="color: red"/>
             </div>
@@ -52,16 +52,16 @@
             <span class="col-md-3" v-if="lastUpdatedBy && lastUpdatedBy !== editEntry.updatedBy">(zuvor: {{lastUpdatedBy}})</span>
         </div>
         <div class="row">
-            <span class="col-md-3 col-md-offset-3">Pflichtfelder sind mit * gekennzeichnet.</span>
+            <span class="col-md-3 offset-md-3">Pflichtfelder sind mit * gekennzeichnet.</span>
         </div>
         <div class="row" style="margin-top: 2em">
-            <button class="col-md-8 col-md-offset-3" @click="thiz.$router.push('/entries/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            <button class="col-md-8 offset-md-3" @click="$router.push('/entries/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-8 col-md-offset-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern und zur Liste [Strg + ENTER]</button>
+            <button class="col-md-8 offset-md-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern und zur Liste [Strg + ENTER]</button>
         </div>
         <div class="row" v-if="!isNew && (previousEntry || nextEntry)">
-            <button class="col-md-4 col-md-offset-3" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i> voriger Eintrag [Strg + Links]</button>
+            <button class="col-md-4 offset-md-3" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i> voriger Eintrag [Strg + Links]</button>
             <button class="col-md-4" :disabled="!nextEntry" @click="next()">nächster Eintrag [Strg + Rechts] <i class="fas fa-arrow-right"></i></button>
         </div>
     </div>

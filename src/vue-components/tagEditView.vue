@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedTag" class="container" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
+    <div v-if="selectedTag" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
         <h2>Tag bearbeiten ({{selectedTag.id}})</h2>
         <div class="row">
             <label class="col-md-3" for="idSpan">ID</label>
@@ -56,13 +56,13 @@
             <span class="col-md-6">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
         </div>
         <div class="row" style="margin-top: 2em">
-            <button class="col-md-6 col-md-offset-3" @click="$router.push('/tree/edit/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            <button class="col-md-6 offset-md-3" @click="$router.push('/tree/edit/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
         </div>
         <div class="row">
-            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="save()"><i class="fas fa-check"></i> Speichern [Strg + S]</button>
+            <button class="col-md-6 offset-md-3" :disabled="!dirty" @click="save()"><i class="fas fa-check"></i> Speichern [Strg + S]</button>
         </div>
         <div class="row">
-            <button class="col-md-6 col-md-offset-3" :disabled="!dirty" @click="saveAndReturn()"><i class="fas fa-check"></i> Speichern und zum Baum [Strg + ENTER]</button>
+            <button class="col-md-6 offset-md-3" :disabled="!dirty" @click="saveAndReturn()"><i class="fas fa-check"></i> Speichern und zum Baum [Strg + ENTER]</button>
         </div>
     </div>
 </template>
@@ -164,6 +164,12 @@
         display: flex;
         justify-content: flex-end;
         padding-right: 1em;
+    }
+
+    @media (max-width: 768px) {
+        label {
+            justify-content: unset;
+        }
     }
 
     .row {
