@@ -8,6 +8,11 @@ body {
     flex-direction: column;
 }
 
+*:focus {
+    outline: none !important;
+    box-shadow: 0 0 3pt 2pt orange !important;
+}
+
 .content {
     flex: 1 0 auto;
 }
@@ -15,6 +20,8 @@ body {
 .own-container {
     padding-left: 1em;
     padding-right: 1em;
+    max-width: 1170px;
+    margin: auto;
 }
 
 header {
@@ -40,28 +47,37 @@ header img {
     display: inline-block;
 }
 
+header.own-container {
+    display: flex;
+}
+
 .header-links {
-    margin-top: 1.5em;
-    display: inline-block;
+    display: flex;
+    align-items: center;
 }
 
 .header-links a {
-    margin-right: 0.5em;
+    margin-right: 1.2em;
     color: #000;
-    opacity: 0.8;
     font-weight: bold;
-    height: 100%;
+    font-size: 14px;
 }
 
 @media (max-width: 768px) {
+    header.own-container {
+        display: block;
+    }
     .header-links {
         margin: 0.5em 0;
+    }
+    .header-links a {
+        margin-right: 0.5em;
     }
 }
 
 @media (min-width: 768px) {
     header a.first-link {
-        margin-left: 5em;
+        margin-left: 8em;
     }
 }
 
