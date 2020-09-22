@@ -11,7 +11,7 @@
                     </a>
                 </div>
                 <nav class="col-lg-5 col-sm-12 header-links">
-                    <router-link v-for="entry in linkList" class="button" :to="entry.to">{{entry.name}}</router-link>
+                    <router-link v-for="entry in linkList" class="button" :to="entry.to" :key="entry.to">{{entry.name}}</router-link>
                 </nav>
             </header>
             <main class="own-container">
@@ -53,7 +53,7 @@
                         </ul>
                     </div>
                 </nav>
-                <span>Zuletzt aktualisiert: 21.09.2020</span>
+                <span>Zuletzt aktualisiert: 22.09.2020</span>
             </div>
         </footer>
     </div>
