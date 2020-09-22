@@ -10,6 +10,7 @@ import EntriesView from '../vue-components/entriesView.vue'
 import * as log from 'loglevel';
 import {databaseService} from "./service/data/databaseService";
 import {localStorageService} from "./service/data/localStorageService";
+import VueMain from "../vue-components/vue-main.vue";
 
 function init() {
     window.log = log;
@@ -56,7 +57,18 @@ function init() {
 
     Vue.use(VueRouter);
     let app = new Vue({
-        router
+        router: router,
+        data: function () {
+            return {
+                linkList: [
+                    {name: 'Einträge', to: '/entries'},
+                    {name: 'Tag-Baum', to: '/tree'},
+                    {name: 'Tags bearbeiten', to: '/tree/edit'},
+                    {name: 'Login', to: '/login'},
+                ]
+            }
+        },
+        components: {VueMain}
     }).$mount('#app');
 }
 

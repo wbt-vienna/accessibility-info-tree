@@ -5,29 +5,22 @@ html, body {
 body {
     font-family: 'Open Sans', sans-serif !important;
     display: flex;
-    flex-direction: column;
 }
 
-*:focus {
+.main-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+}
+
+*:focus, header a:focus img {
     outline: none !important;
     box-shadow: 0 0 3pt 2pt orange !important;
 }
 
-.content {
-    flex: 1 0 auto;
-}
-
-.own-container {
-    padding-left: 1em;
-    padding-right: 1em;
-    max-width: 1170px;
-    margin: auto;
-}
-
-header {
-    padding: 5px;
-    min-height: 70px;
-    margin-bottom: 1em;
+.tagButton {
+    border: none !important;
 }
 
 h2, h3 {
@@ -36,103 +29,4 @@ h2, h3 {
     line-height: 1.1 !important;
     color: #337ab7 !important;
     margin-bottom: 0.7em !important;
-}
-
-label {
-    font-weight: bold;
-}
-
-header img {
-    max-height: 70px;
-    display: inline-block;
-}
-
-header.own-container {
-    display: flex;
-}
-
-.header-links {
-    display: flex;
-    align-items: center;
-}
-
-.header-links a {
-    margin-right: 1.2em;
-    color: #000;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-@media (max-width: 768px) {
-    header.own-container {
-        display: block;
-    }
-    .header-links {
-        margin: 0.5em 0;
-    }
-    .header-links a {
-        margin-right: 0.5em;
-    }
-}
-
-@media (min-width: 768px) {
-    header a.first-link {
-        margin-left: 8em;
-    }
-}
-
-main {
-    border-top: 1px solid whitesmoke;
-    padding-top: 1em;
-    padding-bottom: 5em;
-}
-
-.row {
-    margin-bottom: 1em;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-footer .row {
-    margin-bottom: 2em;
-}
-
-.tagButton {
-    border: none !important;
-}
-
-button {
-    cursor: pointer;
-}
-
-footer {
-    flex-shrink: 0;
-    width: 100%;
-    background-color: #333333;
-    color: #c4c4c4;
-    font-size: 16px;
-}
-
-.footer-content {
-    padding: 2em 0;
-    height: 100%;
-}
-
-footer a, footer a:hover {
-    color: #c4c4c4;
-    font-size: 16px;
-    line-height: 1.42857143;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-footer ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-footer li {
-    padding: 0 15px 5px 0;
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
