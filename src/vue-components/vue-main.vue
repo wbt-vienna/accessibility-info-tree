@@ -164,6 +164,13 @@ footer {
     height: 100%;
 }
 
+@media (max-width: 1220px) {
+    .footer-content {
+        padding-top: 2em;
+        padding-bottom: 1em;
+    }
+}
+
 footer a, footer a:hover {
     color: #c4c4c4;
     font-size: 16px;
