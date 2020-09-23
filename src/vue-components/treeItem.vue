@@ -2,7 +2,7 @@
     <div v-if="item" style=";">
         <div v-for="childId in item.children" style="display: flex; align-items: center; border: 1px solid gray;">
             <div class="treeText" :style="getStyle(childId)">
-                <button v-for="action in actions" style="padding: 0; margin: 0 2px;" @click="action.fn(childId, item.id)" :title="action.title" v-show="action.show ? action.show(childId) : true"><i :class="action.icon"/></button>
+                <button v-for="action in actions" style="padding: 1px; margin: 0 2px; border: 1px solid gray" @click="action.fn(childId, item.id)" :title="action.title" v-show="action.show ? action.show(childId) : true"><i :class="action.icon"/></button>
                 <a v-if="getTag(childId).children.length > 0" href="javascript:;" @click="selectTagFn(childId)">{{getLabel(childId)}}</a>
                 <span v-else>{{getLabel(childId)}}</span>
             </div>
