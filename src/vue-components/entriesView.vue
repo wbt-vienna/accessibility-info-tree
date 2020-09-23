@@ -1,9 +1,14 @@
 <template>
     <div class="container">
-        <h2 style="display: inline-block">Einträge</h2>
-        <router-link v-if="canEdit" to="/entry/edit/" style="float: right; margin-top: 1em; margin-right: 3em;"><i
-                class="fas fa-plus"></i> Neuer Eintrag
-        </router-link>
+        <div style="display: flex">
+            <h2>Einträge</h2>
+            <div style="display: flex; flex-grow: 1; justify-content: flex-end">
+                <router-link v-if="canEdit" to="/entry/edit/" >
+                    <i class="fas fa-plus"></i>
+                    <span>Neuer Eintrag</span>
+                </router-link>
+            </div>
+        </div>
         <h3>Filter</h3>
         <div class="row" v-if="tags">
             <div class="col-md-12">
@@ -15,27 +20,27 @@
                           @change="filterChanged()" :show-search-bar="true"></tag-selector>
         </div>
         <div class="row" v-if="tags">
-            <accordion acc-label="Erweiterte Sucheinstellugen" class="col-md-12" style="margin-top: 1em">
-                <div>
-                    <label for="inputChkOr">Verknüpfungsmodus</label>
-                    <select id="inputChkOr" v-model="filterOptions.joinMode" @change="filterChanged()">
+            <accordion acc-label="Erweiterte Sucheinstellungen" class="col-md-12" style="margin-top: 1em">
+                <div class="form-group">
+                    <label class="col-form-label" for="inputChkOr">Verknüpfungsmodus</label>
+                    <select class="form-control" id="inputChkOr" v-model="filterOptions.joinMode" @change="filterChanged()">
                         <option value="OR">ODER</option>
                         <option value="AND">UND</option>
                         <option value="NOT">NICHT</option>
                     </select>
                 </div>
-                <div v-if="canEdit">
-                    <label for="inputCreatedBy">Zuletzt aktualisiert von</label>
-                    <select id="inputCreatedBy" v-model="filterOptions.updatedBy" @change="filterChanged()">
+                <div v-if="canEdit" class="form-group">
+                    <label class="col-form-label" for="inputCreatedBy">Zuletzt aktualisiert von</label>
+                    <select class="form-control" id="inputCreatedBy" v-model="filterOptions.updatedBy" @change="filterChanged()">
                         <option value="">alle</option>
                         <option v-for="user in updatedByList" :value="user">{{user}}</option>
                     </select>
                 </div>
-                <div v-if="canEdit">
+                <div class="form-group" v-if="canEdit">
                     <input id="possibleDuplicates" type="checkbox" v-model="filterOptions.onlyPossibleDuplicates" @change="filterChanged()">
                     <label for="possibleDuplicates">Nur potentielle Duplikate anzeigen</label>
                 </div>
-                <div v-if="canEdit">
+                <div class="form-group" v-if="canEdit">
                     <input id="incomplete" type="checkbox" v-model="filterOptions.onlyIncomplete" @change="filterChanged()">
                     <label for="incomplete">Nur unvollständige Einträge anzeigen</label>
                 </div>
