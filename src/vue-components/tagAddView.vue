@@ -1,61 +1,77 @@
 <template>
     <div class="container" v-if="selectedTag" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
         <h2>Tag hinzufügen (Kind von '{{tagUtil.getLabel(parentTag)}}')</h2>
-        <div class="row">
-            <label class="col-md-3" for="idInput" style="align-items: center;">ID</label>
-            <input type="text" class="col-md-6" id="idInput" v-model="selectedTag.id" v-focus autocomplete="off"/>
-            <span class="col-md-2" v-if="tagIds.indexOf(selectedTag.id) > -1" style="display:flex; align-items: center; color: red">ID bereits vorhanden!</span>
-            <span class="col-md-2" v-if="!/^[A-Z_0-9]*$/.test(selectedTag.id)" style="display:flex; align-items: center; color: red">Nur Großbuchstaben, Zahlen oder "_" erlaubt!</span>
+        <div class="form-group">
+            <label for="idInput" style="align-items: center;">ID</label>
+            <input type="text" class="form-control" id="idInput" v-model="selectedTag.id" v-focus autocomplete="off"/>
+            <div class="pt-1" v-if="tagIds.indexOf(selectedTag.id) > -1" style="color: red">ID bereits vorhanden!</div>
+            <div class="pt-1" v-if="!/^[A-Z_0-9]*$/.test(selectedTag.id)" style="color: red">Nur Großbuchstaben, Zahlen oder "_" erlaubt!</div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="labelInput" style="align-items: center;">Label</label>
-            <input type="text" class="col-md-6" id="labelInput" v-model="selectedTag.label.de" autocomplete="off"/>
+        <div class="form-group">
+            <label for="labelInput">Label</label>
+            <input type="text" class="form-control" id="labelInput" v-model="selectedTag.label.de" autocomplete="off"/>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="colorInput" style="align-items: center;">Farbe</label>
-            <input type="color" id="colorInput" v-model="selectedTag.color"/>
-            <button @click="selectedTag.color = ''" style="padding: 0 3px" title="Farbe löschen">X</button>
+        <div class="form-group">
+            <label for="colorInput">Farbe</label>
+            <div class="row">
+                <div class="col-3 col-md-1">
+                    <input type="color" id="colorInput" v-model="selectedTag.color" title="Farbe wählen" style="height: 100%; width: 100%"/>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn-primary form-control" @click="selectedTag.color = ''" title="Farbe löschen"><span>Farbe löschen</span></button>
+                </div>
+            </div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="listParents">Eltern</label>
-            <div class="col-md-6" id="listParents">
+        <div class="form-group">
+            <label for="listParents">Eltern</label>
+            <div id="listParents">
                 <div v-if="selectedTag.parents.length === 0">(keine)</div>
                 <div v-for="parent in selectedTag.parents">
                     <span>{{tagUtil.getLabel(parent, tags)}}</span>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="listChildren">Kinder</label>
-            <div class="col-md-6" id="listChildren">
+        <div class="form-group">
+            <label for="listChildren">Kinder</label>
+            <div id="listChildren">
                 <div v-if="selectedTag.children.length === 0">(keine)</div>
             </div>
         </div>
-        <div class="row" v-if="!parentTag.searchRoot && !tagUtil.anyParentHasProperty(parentTag, tags, 'searchRoot')">
-            <label class="col-md-3" for="searchRoot">Root-Tag für Suche</label>
-            <input type="checkbox" v-model="selectedTag.searchRoot" id="searchRoot" class="col-md-1"/>
-            <span class="col-md-6">(Kinder dieses Tags werden als Basis für die Eintrags-Suche angeboten)</span>
+        <div class="form-group">
+            <div class="form-check" v-if="!parentTag.searchRoot && !tagUtil.anyParentHasProperty(parentTag, tags, 'searchRoot')">
+                <input type="checkbox" v-model="selectedTag.searchRoot" id="searchRoot" class="form-check-input"/>
+                <label class="form-check-label" for="searchRoot">Root-Tag für Suche</label>
+                <span class="ml-2">(Kinder dieses Tags werden als Basis für die Eintrags-Suche angeboten)</span>
+            </div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="notAssignable">Nicht zuweisbar</label>
-            <input type="checkbox" v-model="selectedTag.notAssignable" id="notAssignable" class="col-md-1"/>
-            <span class="col-md-6">(Dieser Tag kann Einträgen nicht direkt zugeordnet werden, da er nur ein Sammelbegriff für mehrere Kinder-Tags ist)</span>
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" v-model="selectedTag.notAssignable" id="notAssignable" class="form-check-input"/>
+                <label class="form-check-label" for="notAssignable">Nicht zuweisbar</label>
+                <span class="ml-2">(Dieser Tag kann Einträgen nicht direkt zugeordnet werden, da er nur ein Sammelbegriff für mehrere Kinder-Tags ist)</span>
+            </div>
         </div>
-        <div class="row" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
-            <label class="col-md-3" for="mandatory">Verpflichtend</label>
-            <input type="checkbox" v-model="selectedTag.mandatory" id="mandatory" class="col-md-1" @change="selectedTag.mandatory ? (selectedTag.optional = !selectedTag.mandatory) : null"/>
-            <span class="col-md-6">(Jeder Eintrag muss verpflichtend ein Kind dieses Tags zugewiesen werden)</span>
+        <div class="form-group">
+            <div class="form-check" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
+                <input type="checkbox" v-model="selectedTag.mandatory" id="mandatory" class="form-check-input" @change="selectedTag.mandatory ? (selectedTag.optional = !selectedTag.mandatory) : null"/>
+                <label class="form-check-label" for="mandatory">Verpflichtend</label>
+                <span class="ml-2">(Jeder Eintrag muss verpflichtend ein Kind dieses Tags zugewiesen werden)</span>
+            </div>
         </div>
-        <div class="row" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
-            <label class="col-md-3" for="optional">Optional</label>
-            <input type="checkbox" v-model="selectedTag.optional" id="optional" class="col-md-1" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
-            <span class="col-md-6">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
+        <div class="form-group">
+            <div class="form-check" v-if="!parentTag.mandatory && !parentTag.optional && !tagUtil.anyParentHasProperty(parentTag, tags, ['mandatory', 'optional'])">
+                <input type="checkbox" v-model="selectedTag.optional" id="optional" class="form-check-input" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
+                <label class="form-check-label" for="optional">Optional</label>
+                <span class="ml-2">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
+            </div>
         </div>
-        <div class="row" style="margin-top: 2em">
-            <button class="col-md-6 offset-md-3" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
-        </div>
-        <div class="row">
-            <button class="col-md-6 offset-md-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [Strg + ENTER]</button>
+        <div class="row save-buttons" style="margin-top: 3em">
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" @click="$router.go(-1)"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            </div>
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Tag einfügen [Strg + ENTER]</button>
+            </div>
         </div>
     </div>
 </template>
@@ -128,15 +144,7 @@
 
 <style scoped>
     label {
-        display: flex;
-        justify-content: flex-end;
-        padding-right: 1em;
-    }
-
-    @media (max-width: 768px) {
-        label {
-            justify-content: unset;
-        }
+        font-weight: bold;
     }
 
     .row {
@@ -146,5 +154,9 @@
     button {
         padding-top: 0.5em;
         padding-bottom: 0.5em;
+    }
+
+    .save-buttons div {
+        display: flex;
     }
 </style>
