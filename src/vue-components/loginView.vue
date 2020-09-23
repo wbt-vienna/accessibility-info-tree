@@ -1,20 +1,28 @@
 <template>
     <div>
-        <div v-if="loggedIn">
-            <span>Bereits eingeloggt!</span>
-            <button @click="logout()">Ausloggen</button>
-        </div>
-        <div v-if="!loggedIn">
+        <div v-if="loggedIn" class="container">
             <div class="row">
-                <label class="col-sm-2 mr-1" for="passwordField">Passwort: </label>
-                <input class="col-sm-3 mr-1" id="passwordField" type="password" v-model="password"/>
-                <button class="col-sm-3 mr-1" @click="login">Login</button>
-                <span v-if="wrongPassword">Falsches Passwort!</span>
+                <span class="col-md-12">Bereits eingeloggt!</span>
+                <div class="col-md-4">
+                    <button  @click="logout()" class="form-control btn-primary my-3">Ausloggen</button>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <input class="mr-1" id="inSavePassword" type="checkbox" v-model="savePassword"/>
-                    <label for="inSavePassword">Passwort speichern und in Zukunft automatisch einloggen</label>
+        </div>
+        <div v-if="!loggedIn" class="container">
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="passwordField">Passwort </label>
+                <div class="col-md-4">
+                    <input type="password" class="form-control" id="passwordField" v-model="password"/>
+                </div>
+                <div class="col-md-2">
+                    <button @click="login" class="form-control my-2 my-md-0 btn-primary">Login</button>
+                </div>
+                <span class="col-md-4" v-if="wrongPassword">Falsches Passwort!</span>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input id="inSavePassword" type="checkbox" v-model="savePassword" class="form-check-input"/>
+                    <label for="inSavePassword" class="form-check-label">Passwort speichern und in Zukunft automatisch einloggen</label>
                 </div>
             </div>
         </div>
