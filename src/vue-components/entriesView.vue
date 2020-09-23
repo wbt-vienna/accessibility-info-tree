@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <h2 style="display: inline-block">Einträge</h2>
         <router-link v-if="canEdit" to="/entry/edit/" style="float: right; margin-top: 1em; margin-right: 3em;"><i
                 class="fas fa-plus"></i> Neuer Eintrag

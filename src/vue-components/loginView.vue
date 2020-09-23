@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div class="container">
+            <h2>Login</h2>
+        </div>
         <div v-if="loggedIn" class="container">
             <div class="row">
                 <span class="col-md-12">Bereits eingeloggt!</span>

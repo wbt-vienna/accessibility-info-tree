@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedTag" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
+    <div class="container" v-if="selectedTag" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
         <h2>Tag bearbeiten ({{selectedTag.id}})</h2>
         <div class="row">
             <label class="col-md-3" for="idSpan">ID</label>

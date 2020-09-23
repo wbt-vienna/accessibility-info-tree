@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <h2>Tags bearbeiten</h2>
         <span v-if="tags">{{tags.length}} Tags</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags" :actions="actions"></tag-tree>

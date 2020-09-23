@@ -1,14 +1,8 @@
 <template>
-    <div>
+    <div class="container">
         <h2>Tag-Baum</h2>
         <span v-if="tags">{{tags.length}} Tags</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags"></tag-tree>
-
-        <h2>Tag-Suche</h2>
-        <input type="text" v-model="search" @input="searchTags"/>
-        <div class="responsive-margin">
-            <span v-for="tag in filteredTags"><a href="javascript:;" @click="selectTag(tag.id)">{{tag.id}} </a></span>
-        </div>
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedTag" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
+    <div class="container" v-if="selectedTag" @keydown.esc="$router.go(-1)" @keydown.ctrl.enter="save()">
         <h2>Tag hinzufügen (Kind von '{{tagUtil.getLabel(parentTag)}}')</h2>
         <div class="row">
             <label class="col-md-3" for="idInput" style="align-items: center;">ID</label>

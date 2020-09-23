@@ -1,5 +1,5 @@
 <template>
-    <div v-if="editEntry" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
+    <div class="container" v-if="editEntry" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
         <div class="row">
             <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
             <div v-if="!isNew" style="display: flex; align-items: center; margin-left: 1em">

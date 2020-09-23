@@ -14,7 +14,7 @@
                     <router-link v-for="entry in linkList" class="button" :to="entry.to" :key="entry.to">{{entry.name}}</router-link>
                 </nav>
             </header>
-            <main class="container">
+            <main>
                 <router-view></router-view>
             </main>
         </div>
