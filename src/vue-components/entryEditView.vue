@@ -1,68 +1,77 @@
 <template>
     <div class="container" v-if="editEntry" @keydown.esc="$router.push('/entries')" @keydown.ctrl.enter="save()" @keydown.ctrl.right="next()" @keydown.ctrl.left="previous()">
-        <div class="row">
+        <div class="heading" style="display: flex">
             <h2>Eintrag {{isNew ? 'hinzufügen' : 'bearbeiten'}}</h2>
-            <div v-if="!isNew" style="display: flex; align-items: center; margin-left: 1em">
+            <div v-if="!isNew" class="d-none d-md-flex" style="align-items: center; margin-left: 1em; margin-bottom: 1em">
                 <i v-if="valid" title="aktueller Eintrag enthält alle Pflichtfelder" class="fas fa-check" style="color: green"/>
                 <i v-if="!valid" title="aktueller Eintrag enthält nicht alle Pflichtfelder" class="fas fa-times" style="color: red"/>
             </div>
             <div v-if="!isNew && (previousEntry || nextEntry)" style="display: flex; justify-content: flex-end; flex-grow: 1">
-                <button :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i></button>
-                <button :disabled="!nextEntry" @click="next()"><i class="fas fa-arrow-right"></i></button>
+                <button class="form-control" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i></button>
+                <button class="form-control" :disabled="!nextEntry" @click="next()"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="inputHeader">Überschrift*</label>
-            <input type="text" class="col-md-6" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
+        <div class="form-group">
+            <label for="inputHeader">Überschrift*</label>
+            <input type="text" class="form-control" id="inputHeader" v-model="editEntry.header" v-focus autocomplete="off" maxlength="80" @input="recomputeSimilar()"/>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="linkInput">Link</label>
-            <input type="text" class="col-md-6" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
-            <span class="col-md-2" v-if="editEntry.link && editEntry.link.indexOf('http') !== 0" style="display:flex; align-items: center; color: red">muss mit http oder https beginnen!</span>
+        <div class="form-group">
+            <label for="linkInput">Link</label>
+            <input type="text" class="form-control" id="linkInput" v-model="editEntry.link" autocomplete="off" @input="recomputeSimilar()"/>
+            <div class="input-error" v-if="editEntry.link && editEntry.link.indexOf('http') !== 0">muss mit http oder https beginnen!</div>
         </div>
-        <div class="row" v-if="existingSimilar.length > 0">
-            <label class="col-md-3" for="existingEntries" style="font-weight: normal; font-style: italic">Bereits existierende Einträge</label>
-            <ul id="existingEntries" style="list-style-type: none; padding-left: 0" class="col-md-8">
-                <li v-for="entry in existingSimilar">
+        <div class="form-group" v-if="existingSimilar.length > 0" style="margin-bottom: 2.5em">
+            <label for="existingEntries" style="font-weight: normal; font-style: italic">Bereits existierende Einträge</label>
+            <ul id="existingEntries" style="list-style-type: none; padding-left: 0">
+                <li v-for="entry in existingSimilar" class="mb-2">
                     <a :href="entry.link" target="_blank">{{entry.header}}</a>
-                    <button class="tagButton" @click="addTag(tagId)" v-for="tagId in entry.tags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
-                    </button>
+                    <div>
+                        <button class="tagButton" @click="addTag(tagId)" v-for="tagId in entry.tags" :style="tagUtil.getColorStyle(tagId, tags)" v-html="tagUtil.getLabel(tagId, tags)">
+                        </button>
+                    </div>
                 </li>
             </ul>
         </div>
-        <div class="row">
-            <label class="col-md-3" for="shortInput">Kurzbeschreibung*</label>
-            <textarea class="col-md-6" id="shortInput" v-model="editEntry.short" maxlength="500"/>
+        <div class="form-group">
+            <label for="shortInput">Kurzbeschreibung*</label>
+            <textarea class="form-control" id="shortInput" v-model="editEntry.short" maxlength="500"/>
         </div>
-        <div class="row" v-for="(startTag, index) in mandatoryTags">
-            <label class="col-md-3" :for="'inputTags' + index" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
-            <div class="col-md-8" :id="'inputTags' + index">
+        <div class="form-group tag-select" v-for="(startTag, index) in mandatoryTags">
+            <label :for="'inputTags' + index" style="align-items: initial;">{{tagUtil.getLabel(startTag, tags)}}*</label>
+            <div :id="'inputTags' + index">
                 <tag-selector :start-tag-ids="startTag" :tags="tags" v-model="editEntry.tags" :respect-assignable="true" :show-search-bar="startTag.id === 'ACCESSIBILITY'" :ref="'tagSelector' + index" @change="recompute()"></tag-selector>
             </div>
         </div>
-        <div class="row" v-show="optionalTags.length > 0">
-            <label class="col-md-3" for="optionalTags" style="align-items: initial;">Optionale Tags</label>
-            <div class="col-md-8" id="optionalTags">
+        <div class="form-group tag-select" v-show="optionalTags.length > 0">
+            <label for="optionalTags" style="align-items: initial;">Optionale Tags</label>
+            <div id="optionalTags">
                 <tag-selector :start-tag-ids="optionalTags" :tags="tags" v-model="editEntry.tags" :respect-assignable="true" ref="tagSelectorOptional" @change="recompute()"></tag-selector>
             </div>
         </div>
-        <div class="row" style="margin-top: 1.5em">
-            <label class="col-md-3" for="updatedBy">{{isNew ? 'Erstellt von*' : 'Aktualisiert von*'}}</label>
-            <input type="text" class="col-md-3" id="updatedBy" v-model="editEntry.updatedBy" autocomplete="off" maxlength="15" placeholder="z.B. Vorname / Namenskürzel"/>
-            <span class="col-md-3" v-if="lastUpdatedBy && lastUpdatedBy !== editEntry.updatedBy">(zuvor: {{lastUpdatedBy}})</span>
+        <div class="form-group" style="margin-top: 1.5em">
+            <label for="updatedBy">{{isNew ? 'Erstellt von*' : 'Aktualisiert von*'}}</label>
+            <input type="text" class="form-control" id="updatedBy" v-model="editEntry.updatedBy" autocomplete="off" maxlength="15" placeholder="z.B. Vorname / Namenskürzel"/>
+            <div v-if="lastUpdatedBy && lastUpdatedBy !== editEntry.updatedBy" style="margin-top: 0.5em">(zuvor: {{lastUpdatedBy}})</div>
         </div>
         <div class="row">
-            <span class="col-md-3 offset-md-3">Pflichtfelder sind mit * gekennzeichnet.</span>
+            <span class="col-12">Pflichtfelder sind mit * gekennzeichnet.</span>
         </div>
-        <div class="row" style="margin-top: 2em">
-            <button class="col-md-8 offset-md-3" @click="$router.push('/entries/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+        <div class="row save-buttons" style="margin-top: 3em">
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" @click="$router.push('/entries/')"><i class="fas fa-times"></i> Abbrechen [ESC]</button>
+            </div>
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern und zur Liste [Strg + ENTER]</button>
+            </div>
         </div>
-        <div class="row">
-            <button class="col-md-8 offset-md-3" :disabled="!valid" @click="save()"><i class="fas fa-check"></i> Eintrag speichern und zur Liste [Strg + ENTER]</button>
-        </div>
-        <div class="row" v-if="!isNew && (previousEntry || nextEntry)">
-            <button class="col-md-4 offset-md-3" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i> voriger Eintrag [Strg + Links]</button>
-            <button class="col-md-4" :disabled="!nextEntry" @click="next()">nächster Eintrag [Strg + Rechts] <i class="fas fa-arrow-right"></i></button>
+
+        <div class="row save-buttons" v-if="!isNew && (previousEntry || nextEntry)" style="margin-top: 1em">
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" :disabled="!previousEntry" @click="previous()"><i class="fas fa-arrow-left"></i> voriger Eintrag [Strg + Links]</button>
+            </div>
+            <div class="form-group col-md-6">
+                <button class="form-control btn-primary" :disabled="!nextEntry" @click="next()">nächster Eintrag [Strg + Rechts] <i class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
     </div>
 </template>
@@ -222,10 +231,7 @@
 
 <style scoped>
     label {
-        display: flex;
-        justify-content: flex-end;
-        padding-right: 1em;
-        align-items: center;
+        font-weight: bold;
     }
 
     .row span {
@@ -242,15 +248,24 @@
         padding-bottom: 0.5em;
     }
 
-    .input-error {
-        display: flex;
-        align-items: center;
-        color: red;
+    .heading button {
+        width: 15vw;
+        max-width: 100px;
+        margin-left: 0.5em;
     }
 
-    .tagButton {
-        font-size: 0.6em;
-        padding: 0 2px 0 2px;
-        margin: 0 2px;
+    .input-error {
+        color: red;
+        margin-top: 0.5em;
+    }
+
+    .tag-select {
+        margin: 1em 0;
+    }
+
+    @media (max-width: 768px) {
+        .tag-select {
+            margin: 2.5em 0;
+        }
     }
 </style>
