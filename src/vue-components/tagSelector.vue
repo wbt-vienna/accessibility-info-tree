@@ -155,11 +155,6 @@
 </script>
 
 <style scoped>
-    .tagButton {
-        padding: 0 5px 0 5px;
-        margin: 2px;
-    }
-
     .row {
         margin-top: 0 !important;
         margin-bottom: 0.5em;

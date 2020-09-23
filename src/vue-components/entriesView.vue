@@ -296,9 +296,4 @@
     p {
         margin: 0;
     }
-
-    .tagButton {
-        padding: 0 5px 0 5px;
-        margin: 2px;
-    }
 </style>
