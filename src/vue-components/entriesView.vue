@@ -52,8 +52,8 @@
             <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
             <ul v-if="!loading">
                 <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)" :style="'background-color:' + entry.color">
-                    <router-link v-if="canEdit" class="actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten" style="padding: 1px 3px;"><i class="fas fa-pencil-alt"/></router-link>
-                    <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
+                    <router-link v-if="canEdit" class="actionBtn form-control" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
+                    <button v-if="canEdit" class="actionBtn form-control" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
@@ -268,12 +268,15 @@
 
 <style scoped>
     .actionBtn {
-        padding: 0 3px;
+        padding: 3px 3px;
         margin: 0 2px;
-        border: 1px solid gray;
-        background: lightgray;
-        color: black;
-        border-radius: 0;
+        width: unset;
+        display: inline-block;
+        height: 2em;
+    }
+
+    .actionBtn:hover {
+        color: #495057;
     }
 
     .entryHeader {
