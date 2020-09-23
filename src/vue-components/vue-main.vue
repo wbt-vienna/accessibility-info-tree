@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
         <div class="content">
-            <header class="own-container">
+            <header class="container">
                 <h1 class="col-lg-5 col-sm-7 col-8 p-0">
                     <a href="https://wbt.wien/" title="Projektseite Wissensdrehscheibe" target="_blank"><img aria-hidden="true" src="app/img/prepart.svg"/></a><a href="." :title="pageName + ' Home'"><img aria-hidden="true" :src="logoPath"/></a>
                 </h1>
@@ -14,19 +14,19 @@
                     <router-link v-for="entry in linkList" class="button" :to="entry.to" :key="entry.to">{{entry.name}}</router-link>
                 </nav>
             </header>
-            <main class="own-container">
+            <main class="container">
                 <router-view></router-view>
             </main>
         </div>
         <footer>
-            <div class="footer-content own-container">
-                <nav class="qa-nav-footer">
+            <div class="footer-content container">
+                <nav class="qa-nav-footer container">
                     <div class="row">
-                        <div class="col-md-6 col-lg-8" style="margin-bottom: 1em; padding: 0">
+                        <div class="col-md-6 col-lg-8 p-0 mb-4">
                             <span>Diese Seite ist Teil des Projektes</span>
                             <a href="http://wbt.wien/" target="_blank">Wissensdrehschreibe für Barrierefreie Technologien</a>
                             <span>an der</span>
-                            <a href="https://www.technikum-wien.at/" target="_blank">FH Technikum Wien</a>
+                            <a href="https://www.technikum-wien.at/" target="_blank">FH&nbsp;Technikum&nbsp;Wien</a>.
                         </div>
                         <div class="col-md-6 col-lg-4">
                             <a href="https://www.technikum-wien.at/" target="_blank">
@@ -53,7 +53,11 @@
                         </ul>
                     </div>
                 </nav>
-                <span>Zuletzt aktualisiert: 22.09.2020</span>
+                <div class="container">
+                    <div class="row">
+                        <span>Zuletzt aktualisiert: 22.09.2020</span>
+                    </div>
+                </div>
             </div>
         </footer>
     </div>
@@ -92,17 +96,10 @@ header h1 a:focus {
     flex: 1 0 auto;
 }
 
-.own-container {
-    padding-left: 1em;
-    padding-right: 1em;
-    max-width: 1170px;
-    margin: auto;
-}
-
 header {
-    padding: 5px;
     min-height: 70px;
-    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
 }
 
 label {
@@ -114,9 +111,10 @@ header img {
     display: inline-block;
 }
 
-header.own-container {
+header.container {
     display: flex;
     flex-wrap: wrap;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .header-links {
@@ -140,15 +138,8 @@ header.own-container {
 }
 
 main {
-    border-top: 1px solid whitesmoke;
-    padding-top: 1em;
+    padding-top: 1.5em;
     padding-bottom: 5em;
-}
-
-.row {
-    margin-bottom: 1em;
-    margin-left: 0;
-    margin-right: 0;
 }
 
 footer .row {
@@ -168,7 +159,7 @@ footer {
 }
 
 .footer-content {
-    padding-top: 2em;
+    padding-top: 4em;
     padding-bottom: 2em;
     height: 100%;
 }
