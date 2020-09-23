@@ -47,6 +47,7 @@
         width: 100%;
         padding-left: 1.0em;
         position: relative;
+        border-radius: .25rem;
     }
     .btn-accordion:hover, .btn-accordion:focus {
         outline: 2px solid lightblue;
