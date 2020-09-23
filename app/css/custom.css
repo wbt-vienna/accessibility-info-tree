@@ -55,3 +55,9 @@ button {
     background-color: #286090;
     border-color: #204d74;
 }
+
+.btn-primary[disabled] {
+    color: #fff;
+    background-color: #868e9b;
+    border-color: #204d74;
+}
