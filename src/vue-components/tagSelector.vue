@@ -1,14 +1,23 @@
 <template>
     <div class="row">
-        <div class="col-md-4">
-            Gewählte Tags <a href="javascript:;" @click="removeAll">alle löschen</a>
+        <div class="col-md-4" style="margin-bottom: 1.5em">
+            <div class="mb-1">
+                <span class="mr-2">Gewählte Tags</span>
+                <a href="javascript:;" @click="removeAll">alle löschen</a>
+            </div>
             <div>
                 <button class="tagButton" @click="removeTag(tagId)" v-for="tagId in relevantTags" :style="tagUtil.getColorStyle(tagId, tags)"><i class="fas fa-times"></i> {{tagUtil.getLabel(tagId, tags)}}</button>
                 <span v-if="relevantTags.length === 0">(keine)</span>
             </div>
         </div>
         <div class="col-md-8">
-            Tags wählen <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Tag suchen" style="height: 1.5em;"/> <a href="javascript:;" @click="showAll()">alle anzeigen</a>
+            <div class="row">
+                <span class="col-6 col-md-4 col-lg-3 mb-1">Tags wählen</span>
+                <div class="col-sm-12 col-md-4 col-lg-6 order-3 order-md-2">
+                    <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Tag suchen" class="form-control" style="height: 1.5em;"/>
+                </div>
+                <a class="col-6 col-md-4 order-md-3 col-lg-3" href="javascript:;" @click="showAll()" style="display: flex; justify-content: flex-end;">alle anzeigen</a>
+            </div>
             <div>
                 <button class="tagButton" @click="addTag(tag.id)" v-for="tag in selectTags" :style="tagUtil.getColorStyle(tag.id, tags)">
                     <i class="fas fa-plus"></i> {{tag.label.de}}
