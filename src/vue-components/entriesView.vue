@@ -6,7 +6,9 @@
         </router-link>
         <h3>Filter</h3>
         <div class="row" v-if="tags">
-            <input class="col-md-12" type="text" v-model="filterOptions.searchText" @input="filterChanged(400)" placeholder="Textsuche" style="margin-bottom: 1em" v-focus/>
+            <div class="col-md-12">
+                <input class="form-control mb-2" type="text" v-model="filterOptions.searchText" @input="filterChanged(400)" placeholder="Textsuche" v-focus/>
+            </div>
         </div>
         <div v-if="tags">
             <tag-selector :start-tag-ids="searchBaseTags" :tags="tags" v-model="filterOptions.searchTags"
@@ -39,16 +41,14 @@
                 </div>
             </accordion>
         </div>
-        <h3 style="display: inline-block; margin-top: 2em">Ergebnisliste</h3>
+        <h3 style="display: inline-block; margin-top: 1em">Ergebnisliste</h3>
         <span v-if="filteredEntries">({{filteredEntries.length}} Ergebnisse)</span>
         <div>
             <i v-if="loading" class="fa fa-3x fa-spin fa-spinner"/>
             <ul v-if="!loading">
                 <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)" :style="'background-color:' + entry.color">
-                    <router-link v-if="canEdit" class="btn btn-link actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
-                    <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i
-                            class="fas fa-trash-alt"/></button>
-
+                    <router-link v-if="canEdit" class="actionBtn" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten" style="padding: 1px 3px;"><i class="fas fa-pencil-alt"/></router-link>
+                    <button v-if="canEdit" class="actionBtn" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
