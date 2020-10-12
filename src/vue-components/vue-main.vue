@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="col-md-6 col-lg-8 p-0 mb-4">
                             <span>Diese Seite ist Teil des Projektes</span>
-                            <a href="http://wbt.wien/" target="_blank">Wissensdrehschreibe für Barrierefreie Technologien</a>
+                            <a href="https://wbt.wien/" target="_blank">Wissensdrehschreibe für Barrierefreie Technologien</a>
                             <span>an der</span>
                             <a href="https://www.technikum-wien.at/" target="_blank">FH&nbsp;Technikum&nbsp;Wien</a>.
                         </div>
@@ -42,13 +42,13 @@
                     <div class="row">
                         <ul role="presentation" class="col-md-6">
                             <li role="tab">
-                                <a href="http://wbt.wien/" target="_blank">Projektseite Wissensdrehscheibe</a>
+                                <a href="https://wbt.wien/" target="_blank">Projektseite Wissensdrehscheibe</a>
                             </li>
                             <li role="tab">
-                                <a href="http://wbt.wien/" target="_blank">Impressum</a>
+                                <a href="https://wbt.wien/index.php?id=361" target="_blank">Impressum</a>
                             </li>
                             <li role="tab">
-                                <a href="http://wbt.wien/" target="_blank">Kontakt</a>
+                                <a href="https://wbt.wien/index.php?id=251" target="_blank">Kontakt</a>
                             </li>
                         </ul>
                     </div>
