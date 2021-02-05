@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-4" style="margin-bottom: 1.5em">
             <div class="mb-1">
-                <span class="mr-2">Gewählte Tags</span>
+                <span class="mr-2">Gewählte Begriffe</span>
                 <a href="javascript:;" @click="removeAll">alle löschen</a>
             </div>
             <div>
@@ -12,9 +12,9 @@
         </div>
         <div class="col-md-8">
             <div class="row">
-                <span class="col-6 col-md-4 col-lg-3 mb-1">Tags wählen</span>
+                <span class="col-6 col-md-4 col-lg-3 mb-1">Begriffe wählen</span>
                 <div class="col-sm-12 col-md-4 col-lg-6 order-3 order-md-2">
-                    <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Tag suchen" class="form-control" style="height: 1.5em;"/>
+                    <input v-if="showSearchBar" v-model="searchText" @input="searchChanged()" type="search" placeholder="Begriff suchen" class="form-control" style="height: 1.5em;"/>
                 </div>
                 <a class="col-6 col-md-4 order-md-3 col-lg-3" href="javascript:;" @click="showAll()" style="display: flex; justify-content: flex-end;">alle anzeigen</a>
             </div>

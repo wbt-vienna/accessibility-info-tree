@@ -1,6 +1,6 @@
 <template>
     <div class="container" v-if="selectedTag" @keydown.esc="$router.push('/tree/edit/')" @keydown.ctrl.enter="saveAndReturn()" @keydown.ctrl.s.prevent="save()">
-        <h2>Tag bearbeiten ({{selectedTag.id}})</h2>
+        <h2>Begriff bearbeiten ({{selectedTag.id}})</h2>
         <div class="form-group">
             <label for="idSpan">ID</label>
             <span class="form-control" id="idSpan">{{selectedTag.id}}</span>
@@ -44,29 +44,29 @@
         <div class="form-group">
             <div class="form-check" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, 'searchRoot')">
                 <input class="form-check-input" type="checkbox" v-model="selectedTag.searchRoot" id="searchRoot"/>
-                <label class="form-check-label" for="searchRoot">Root-Tag für Suche</label>
-                <span class="ml-2">(Kinder dieses Tags werden als Basis für die Eintrags-Suche angeboten)</span>
+                <label class="form-check-label" for="searchRoot">Root-Begriff für Suche</label>
+                <span class="ml-2">(Kinder dieses Begriffes werden als Basis für die Eintrags-Suche angeboten)</span>
             </div>
         </div>
         <div class="form-group">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" v-model="selectedTag.notAssignable" id="notAssignable"/>
                 <label class="form-check-label" for="notAssignable">Nicht zuweisbar</label>
-                <span class="ml-2">(Dieser Tag kann Einträgen nicht direkt zugeordnet werden, da er nur ein Sammelbegriff für mehrere Kinder-Tags ist)</span>
+                <span class="ml-2">(Dieser Begriff kann Einträgen nicht direkt zugeordnet werden, da er nur ein Sammelbegriff für mehrere Kinder-Begriffe ist)</span>
             </div>
         </div>
         <div class="form-group">
             <div class="form-check" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, ['mandatory', 'optional'])">
                 <input class="form-check-input" type="checkbox" v-model="selectedTag.mandatory" id="mandatory" @change="selectedTag.mandatory ? (selectedTag.optional = !selectedTag.mandatory) : null"/>
                 <label class="form-check-label" for="mandatory">Verpflichtend</label>
-                <span class="ml-2">(Jeder Eintrag muss verpflichtend ein Kind dieses Tags zugewiesen werden)</span>
+                <span class="ml-2">(Jeder Eintrag muss verpflichtend ein Kind dieses Begriffes zugewiesen werden)</span>
             </div>
         </div>
         <div class="form-group">
             <div class="form-check" v-if="!tagUtil.anyParentHasProperty(selectedTag, tags, ['mandatory', 'optional'])">
                 <input class="form-check-input" type="checkbox" v-model="selectedTag.optional" id="optional" @change="selectedTag.optional ? (selectedTag.mandatory = !selectedTag.optional) : null"/>
                 <label class="form-check-label" for="optional">Optional</label>
-                <span class="ml-2">(Kinder dieses Tags werden unter den optionalen zuweisbaren Tags angezeigt)</span>
+                <span class="ml-2">(Kinder dieses Begriffes werden unter den optionalen zuweisbaren Begriffes angezeigt)</span>
             </div>
         </div>
         <div class="row save-buttons" style="margin-top: 3em">
@@ -77,7 +77,7 @@
                 <button class="form-control btn-primary" :disabled="!dirty" @click="save()"><i class="fas fa-check"></i> Speichern [Strg + S]</button>
             </div>
             <div class="form-group col-md-4">
-                <button class="form-control btn-primary" :disabled="!dirty" @click="saveAndReturn()"><i class="fas fa-check"></i> Speichern und zum Baum [Strg + ENTER]</button>
+                <button class="form-control btn-primary" :disabled="!dirty" @click="saveAndReturn()"><i class="fas fa-check"></i> Speichern und zur Übersicht [Strg + ENTER]</button>
             </div>
         </div>
     </div>

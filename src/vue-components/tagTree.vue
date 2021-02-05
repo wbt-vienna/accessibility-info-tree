@@ -1,7 +1,7 @@
 <template>
     <div id="tree" v-if="tags">
         <div>
-            <a href="javascript:;" @click="selectTag('EVERYTHING')">Zeige ganzen Baum</a>
+            <a href="javascript:;" @click="selectTag('EVERYTHING')">Zeige ganze Übersicht</a>
         </div>
         <div style="margin-bottom: 1em">
             <span>Unterbaum nach: </span>

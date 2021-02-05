@@ -62,8 +62,8 @@ function init() {
             return {
                 linkList: [
                     {name: 'Einträge', to: '/entries'},
-                    {name: 'Tag-Baum', to: '/tree'},
-                    {name: 'Tags bearbeiten', to: '/tree/edit'},
+                    {name: 'Begriffe', to: '/tree'},
+                    {name: 'Begriffe bearbeiten', to: '/tree/edit'},
                     {name: 'Login', to: '/login'},
                 ]
             }

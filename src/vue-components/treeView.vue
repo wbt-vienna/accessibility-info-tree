@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <h2>Tag-Baum</h2>
-        <span v-if="tags">{{tags.length}} Tags</span>
+        <h2>Begriffe-Übersicht</h2>
+        <span v-if="tags">{{tags.length}} Begriffe</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags"></tag-tree>
     </div>
 </template>

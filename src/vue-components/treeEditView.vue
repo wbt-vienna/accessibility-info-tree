@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <h2>Tags bearbeiten</h2>
-        <span v-if="tags">{{tags.length}} Tags</span>
+        <h2>Begriffe bearbeiten</h2>
+        <span v-if="tags">{{tags.length}} Begriffe</span>
         <tag-tree v-if="tags" v-model="selectedTag" :tags="tags" :actions="actions"></tag-tree>
         <notification-bar ref="notificationBar"></notification-bar>
     </div>
@@ -32,7 +32,7 @@
                 actions: [
                     {
                         icon: 'fas fa-pencil-alt',
-                        title: 'Tag Bearbeiten',
+                        title: 'Begriff Bearbeiten',
                         fn: function(id) {
                             thiz.toEditTag(id)
                         },
@@ -40,7 +40,7 @@
                     },
                     {
                         icon: 'fas fa-arrows-alt',
-                        title: 'Tag verschieben',
+                        title: 'Begriff verschieben',
                         fn: function(id, parentId) {
                             thiz.moveMode = true;
                             thiz.moveId = id;
@@ -48,7 +48,7 @@
                             let invalidMoveTargetIds = tagUtil.getAllChildIds(thiz.moveId, thiz.tags).concat([thiz.moveId]);
                             thiz.moveTargetIdsChild = thiz.tags.filter(tag => invalidMoveTargetIds.indexOf(tag.id) === -1 && tag.id !== thiz.moveParent && tag.children.indexOf(thiz.moveId) === -1).map(tag => tag.id);
                             thiz.moveTargetIdsSibling = thiz.tags.filter(tag => invalidMoveTargetIds.indexOf(tag.id) === -1).map(tag => tag.id);
-                            thiz.$refs.notificationBar.setTooltip(`Verschiebe Tag '${tagUtil.getLabel(thiz.moveId, thiz.tags)}'. Ziel wählen oder Abbruch mit [ESC].`, {
+                            thiz.$refs.notificationBar.setTooltip(`Verschiebe Begriff '${tagUtil.getLabel(thiz.moveId, thiz.tags)}'. Ziel wählen oder Abbruch mit [ESC].`, {
                                 closeable: false,
                                 actionLink: 'Verschieben abbrechen',
                                 actionLinkFn: function () {
@@ -92,7 +92,7 @@
                     },
                     {
                         icon: 'fas fa-plus',
-                        title: 'Neuen Tag als Kind dieses Knotens einfügen',
+                        title: 'Neuen Begriff als Kind dieses Knotens einfügen',
                         fn: function(id, parentId) {
                             thiz.$router.push('/tag/add/' + id);
                         },
@@ -100,7 +100,7 @@
                     },
                     {
                         icon: 'fas fa-trash-alt',
-                        title: 'Tag Löschen',
+                        title: 'Begriff Löschen',
                         fn: function(id, parentId) {
                             let deleteTag = tagUtil.getTag(id, thiz.tags);
                             let backup = JSON.parse(JSON.stringify(thiz.tags));
