@@ -56,7 +56,7 @@
                     <button v-if="canEdit" class="actionBtn form-control" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
-                    <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)"></p>
+                    <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)" style="word-break: break-word;"></p>
                     <div>
                         <button class="tagButton" v-for="tagId in entry.tags" @click="addTag(tagId)" :style="tagUtil.getColorStyle(tagId, tags)" v-html="highlightInHTML(tagUtil.getLabel(tagId, tags))">
                         </button>
