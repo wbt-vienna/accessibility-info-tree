@@ -2,10 +2,10 @@
     <div class="main-container">
         <div class="content">
             <header class="container">
-                <h1 class="col-lg-5 col-sm-7 col-8 p-0">
+                <h1 class="col-lg-5 col-sm-9 col-12 p-0">
                     <a href="https://wbt.wien/" title="Projektseite Wissensdrehscheibe" target="_blank"><img aria-hidden="true" src="app/img/prepart.svg"/></a><a href="." :title="pageName + ' Home'"><img aria-hidden="true" :src="logoPath"/></a>
                 </h1>
-                <div class="col-lg-2 col-sm-5 col-4 order-lg-last p-0" style="display: flex; justify-content: flex-end; align-items: center;">
+                <div class="col-lg-2 col-sm-3 order-lg-last p-0 d-none d-sm-flex" style="justify-content: flex-end; align-items: center;">
                     <a href="https://www.technikum-wien.at/" target="_blank">
                         <img style="min-height: 40px; max-height: 60px; height: 8vw" src="app/img/fhtw.svg"/>
                     </a>
@@ -79,7 +79,7 @@
 
 <style scoped>
 header img {
-    height: 15vw;
+    height: 16vw;
     max-height: 70px;
     min-height: 50px;
 }
