@@ -45,10 +45,13 @@
                                 <a href="https://wbt.wien/" target="_blank">Projektseite Wissensdrehscheibe</a>
                             </li>
                             <li role="tab">
-                                <a href="https://wbt.wien/index.php?id=361" target="_blank">Impressum</a>
+                                <a href="https://wbt.wien/impressum" target="_blank">Impressum</a>
                             </li>
                             <li role="tab">
-                                <a href="https://wbt.wien/index.php?id=251" target="_blank">Kontakt</a>
+                                <a href="https://wbt.wien/kontakt" target="_blank">Kontakt</a>
+                            </li>
+                            <li role="tab">
+                                <a href="https://wbt.wien/datenschutz" target="_blank">Datenschutz</a>
                             </li>
                         </ul>
                     </div>
