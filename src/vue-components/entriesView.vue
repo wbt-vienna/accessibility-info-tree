@@ -53,7 +53,7 @@
             <ul v-if="!loading">
                 <li v-for="entry in filteredEntries.slice(0, filterOptions.limitResults)" :style="'background-color:' + entry.color">
                     <router-link v-if="canEdit" class="actionBtn form-control" :to="'/entry/edit/' + entry.id" title="Eintrag bearbeiten"><i class="fas fa-pencil-alt"/></router-link>
-                    <button v-if="canEdit" class="actionBtn form-control" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
+                    <button v-if="canDelete" class="actionBtn form-control" @click="remove(entry)" title="Eintrag löschen"><i class="fas fa-trash-alt"/></button>
                     <a class="entryHeader" v-if="entry.link" :href="entry.link" target="_blank" v-html="highlightInHTML(entry.header) + getLinkForHeader(entry)"></a>
                     <span class="entryHeader" v-if="!entry.link">{{highlightInHTML(entry.header)}}</span>
                     <p v-if="entry.short" v-html="filteredEntries.length > 10 && entry.short.length > 150 ? highlightInHTML(entry.short.substring(0, 147)) + '...' : highlightInHTML(entry.short)" style="word-break: break-word;"></p>
@@ -100,6 +100,7 @@
                     onlyIncomplete: false
                 },
                 canEdit: databaseService.isLoggedInReadWrite(),
+                canDelete: databaseService.canDelete(),
                 searchBaseTags: [],
                 tagUtil: tagUtil,
                 constants: constants,

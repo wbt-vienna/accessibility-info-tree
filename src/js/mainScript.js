@@ -35,9 +35,10 @@ function init() {
     router.beforeEach((to, from, next) => {
         if (!databaseService.isLoggedIn()) {
             let password = localStorageService.getPassword();
+            let user = localStorageService.getDbUser();
             let promise = null;
-            if (password) {
-                promise = databaseService.loginReadWrite(password, true);
+            if (user && password) {
+                promise = databaseService.loginWithUser(user, password, true);
             } else {
                 promise = databaseService.loginReadonly();
             }

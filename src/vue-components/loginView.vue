@@ -13,6 +13,12 @@
         </div>
         <div v-if="!loggedIn" class="container">
             <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="username">Username</label>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="username" v-model="username"/>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-md-2 col-form-label" for="passwordField">Passwort </label>
                 <div class="col-md-4">
                     <input type="password" class="form-control" id="passwordField" v-model="password"/>
@@ -43,6 +49,7 @@
         data() {
             return {
                 password: '',
+                username: '',
                 wrongPassword: false,
                 savePassword: false,
                 loggedIn: databaseService.isLoggedInReadWrite(),
@@ -52,7 +59,7 @@
         methods: {
             login() {
                 thiz.wrongPassword = false;
-                databaseService.loginReadWrite(this.password, this.savePassword).then(() => {
+                databaseService.loginWithUser(this.username, this.password, this.savePassword).then(() => {
                     thiz.$router.push(fromRoute);
                 }).catch(() => {
                     thiz.wrongPassword = true;

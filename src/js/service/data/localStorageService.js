@@ -1,5 +1,6 @@
 let localStorageService = {};
 let KEY_USERNAME = 'AIT_KEY_ENTRY_USERNAME';
+let KEY_DB_USER = 'AIT_KEY_DB_USER';
 let KEY_PASSWORD = 'AIT_KEY_PASSWORD';
 let KEY_FILTEROPTIONS = 'AIT_KEY_FILTEROPTIONS';
 let KEY_LAST_SEARCH_RESULTS = 'AIT_KEY_LAST_SEARCH_RESULTS';
@@ -60,6 +61,14 @@ localStorageService.saveUser = function (username) {
  */
 localStorageService.getUser = function () {
     return localStorageService.get(KEY_USERNAME) || "";
+};
+
+localStorageService.saveDbUser = function (user) {
+    return localStorageService.save(KEY_DB_USER, user);
+};
+
+localStorageService.getDbUser = function () {
+    return localStorageService.get(KEY_DB_USER);
 };
 
 localStorageService.savePassword = function (password) {

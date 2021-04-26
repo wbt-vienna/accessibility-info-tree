@@ -23,17 +23,20 @@ databaseService.loginReadonly = function () {
 };
 
 /**
- * logs in read-write user with given password
+ * logs in read-write user with given user and password
+ * @param user
  * @param password
  * @param savePassword if true, password is saved
  * @return {Promise<void>}
  */
-databaseService.loginReadWrite = function (password, savePassword) {
-    let promise = login('accessibility-info-tree-user', password);
+databaseService.loginWithUser = function (user, password, savePassword) {
+    let promise = login(user, password);
     promise.then(() => {
         if (savePassword) {
+            localStorageService.saveDbUser(user);
             localStorageService.savePassword(password);
         } else {
+            localStorageService.saveDbUser('');
             localStorageService.savePassword('');
         }
     });
@@ -53,6 +56,14 @@ databaseService.isLoggedIn = function () {
  * @return {boolean}
  */
 databaseService.isLoggedInReadWrite = function () {
+    return _loggedInUser && _loggedInUser !== 'accessibility-info-tree-user-readonly';
+};
+
+/**
+ * returns true if the currently logged in user can delete documents
+ * @return {boolean}
+ */
+databaseService.canDelete = function () {
     return _loggedInUser === 'accessibility-info-tree-user';
 };
 
