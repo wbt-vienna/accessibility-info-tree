@@ -58,7 +58,7 @@
                 </nav>
                 <div class="container">
                     <div class="row">
-                        <span>Zuletzt aktualisiert: 19.03.2021</span>
+                        <span>Zuletzt aktualisiert: 15.05.2023</span>
                     </div>
                 </div>
             </div>
