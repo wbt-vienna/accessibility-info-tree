@@ -19,13 +19,13 @@ It's possible to retrieve the hierarchy of tags using the following REST command
     * *joinmode* (optional) join mode for the given tags. Valid options: "AND", "OR", "NOT". Default: "AND".
  
 ### Example requests
-* https://couchdb.asterics-foundation.org:4000/tags
-* https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY
-* [https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY/children/1](https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY/children/1)
-* [https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY/selfandchildren/1](https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY/selfandchildren/1)
-* https://couchdb.asterics-foundation.org:4000/tag/ACCESSIBILITY/parents
-* https://couchdb.asterics-foundation.org:4000/entries
-* https://couchdb.asterics-foundation.org:4000/entries/search/foundation
-* [https://couchdb.asterics-foundation.org:4000/entries/tags/AAC;WORK_WORLD](https://couchdb.asterics-foundation.org:4000/entries/tags/AAC;WORK_WORLD)
-* [https://couchdb.asterics-foundation.org:4000/entries/tags/AAC;WORK_WORLD/NOT](https://couchdb.asterics-foundation.org:4000/entries/tags/AAC;WORK_WORLD/NOT)
+* https://login1.couchdb.asterics-foundation.org/api/tags
+* https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY
+* [https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY/children/1](https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY/children/1)
+* [https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY/selfandchildren/1](https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY/selfandchildren/1)
+* https://login1.couchdb.asterics-foundation.org/api/tag/ACCESSIBILITY/parents
+* https://login1.couchdb.asterics-foundation.org/api/entries
+* https://login1.couchdb.asterics-foundation.org/api/entries/search/foundation
+* [https://login1.couchdb.asterics-foundation.org/api/entries/tags/AAC;WORK_WORLD](https://login1.couchdb.asterics-foundation.org/api/entries/tags/AAC;WORK_WORLD)
+* [https://login1.couchdb.asterics-foundation.org/api/entries/tags/AAC;WORK_WORLD/NOT](https://login1.couchdb.asterics-foundation.org/api/entries/tags/AAC;WORK_WORLD/NOT)
 
